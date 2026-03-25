@@ -8,11 +8,8 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
-    "@react-router/node": "^7.9.2",
-    "@react-router/serve": "^7.9.2",
     "@reduxjs/toolkit": "^2.11.2",
     "firebase": "^12.9.0",
-    "isbot": "^5.1.31",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-hook-form": "^7.72.0",
