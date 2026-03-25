@@ -1,0 +1,19 @@
+.header {
+  @apply flex;
+}
+
+.header__navigation {
+  @apply flex gap-4;
+}
+
+.header__navigation-item {
+  @apply text-text-primary cursor-pointer;
+
+  &.logo {
+    @apply text-4xl font-bold italic tracking-wide;
+  }
+
+  &:hover {
+    @apply text-text-primary-hover;
+  }
+}

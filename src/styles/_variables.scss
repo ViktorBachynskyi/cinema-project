@@ -1,0 +1,38 @@
+@theme {
+  --font-quantico: "Quantico", sans-serif;
+
+/* --- Backgrounds --- */
+  --color-bg-app: #121217;                /* Dark Night: deep dark gray/black */
+  --color-bg-main: #2C2738;               /* main content area */
+  --color-bg-surface: #3D374A;            /* cards/panels */
+  --color-bg-surface-hover: #564B6A;      /* hover state */
+  --color-bg-header-footer: #3D374A;      /* same as surface */
+  --color-bg-header-footer-hover: #564B6A;
+
+  /* --- Text Colors --- */
+  --color-text-primary: #E0E7FF;          /* main text, keep */
+  --color-text-primary-hover: #D8B3FF;    /* adjusted to soft lavender */
+  --color-text-secondary: #AABEDC;        /* keep */
+  --color-text-secondary-hover: #E0E7FF;  /* keep */
+  --color-text-muted: #8C809B;            /* warmer muted gray/purple */
+  --color-text-link: #E48FB1;             /* soft pink/lavender for links */
+  --color-text-link-hover: #F1B3D1;       /* lighter pink for hover */
+
+  /* --- Buttons / Highlights --- */
+  --color-button-primary: #E48FB1;        /* soft pink CTA */
+  --color-button-primary-hover: #F1B3D1;  /* lighter pink hover */
+  --color-button-secondary: #3D374A;      /* use surface color */
+  --color-button-secondary-hover: #564B6A;/* hover on secondary button */
+
+  /* --- Borders / Dividers --- */
+  --color-border-default: #4A3F59;        /* subtle purple-gray */
+  --color-border-hover: #BFA0FF;          /* lavender highlight on hover */
+
+  /* --- Feedback / Alerts --- */
+  --color-success: #28C76F;               /* green, stays classic for clarity */
+  --color-success-hover: #5AE88B;
+  --color-error: #FF6B6B;                 /* pinkish-red alert */
+  --color-error-hover: #FF8C8C;
+  --color-warning: #FFD166;               /* gold warning */
+  --color-warning-hover: #FFE69A;
+}

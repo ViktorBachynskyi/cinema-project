@@ -1,25 +1,52 @@
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { HomePage } from "@/pages/HomePage/HomePage";
-import SignIn from "@/pages/SignIn/SignIn";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ProtectedRoute } from "./ProtectedRoute";
-import SignUp from "@/pages/SignUp/SignUp";
+import { lazy, Suspense } from "react";
+
+const HomePage = lazy(() => import("@/pages/HomePage/HomePage"));
+const SignIn = lazy(() => import("@/pages/SignIn/SignIn"));
+const SignUp = lazy(() => import("@/pages/SignUp/SignUp"));
+const MovieDetailsPage = lazy(
+  () => import("@/pages/MovieDetailsPage/MovieDetailsPage"),
+);
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: (
+      <Suspense fallback={<div>Loading...</div>}>
+        <AppLayout />
+      </Suspense>
+    ),
+    children: [
+      {
+        index: true,
+        element: <HomePage />,
+      },
+      {
+        path: "signin",
+        element: <SignIn />,
+      },
+      {
+        path: "signup",
+        element: <SignUp />,
+      },
+      {
+        path: "movie/:id",
+        element: <MovieDetailsPage />,
+      },
+      {
+        path: "favorites",
+        element: (
+          <ProtectedRoute>
+            <div>Favorites page</div>
+          </ProtectedRoute>
+        ),
+      },
+    ],
+  },
+]);
 
 export const AppRouter = () => {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<AppLayout />}>
-          <Route index element={<HomePage />} />
-          <Route path="signin" element={<SignIn />} />
-          <Route path="signup" element={<SignUp />} />
-          <Route path="favorites" element={
-            <ProtectedRoute>
-              <></>
-            </ProtectedRoute>
-          }/>
-        </Route>
-      </Routes>
-    </BrowserRouter>
-  );
+  return <RouterProvider router={router} />;
 };

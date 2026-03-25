@@ -6,6 +6,6 @@ export const useAuth = () => {
 
   return {
     user,
-    isAuthenticated: !!user
+    isAuthenticated: !!user,
   };
 };

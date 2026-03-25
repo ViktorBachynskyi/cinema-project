@@ -2,8 +2,11 @@ import { useGetMoviesQuery } from "@/api/tmdbApi";
 import { getImageUrl } from "@/api/tmdbConfig";
 import { Link } from "react-router-dom";
 
-export const HomePage = () => {
-  const { data, isLoading, isError } = useGetMoviesQuery("?page=1&sort_by=popularity.desc");
+const HomePage = () => {
+  const { data, isLoading, isError } = useGetMoviesQuery({
+    page: 1,
+    sort_by: "popularity.desc",
+  });
 
   if (isLoading) return <div>Loading...</div>;
   if (isError || !data) return <div>Failed to load movies</div>;
@@ -17,11 +20,17 @@ export const HomePage = () => {
           <Link
             key={movie.id}
             to={`/movie/${movie.id}`}
-            className="rounded-xl border border-zinc-800 bg-zinc-900 p-3 hover:border-zinc-600"
+            className="rounded-xl border border-accent bg-bg-surface p-3 hover:bg-bg-surface-hover"
           >
-            <img className="w-full object-cover" src={getImageUrl(movie.poster_path, "w500")} alt="alt" />
-            <div className="text-sm font-medium">{movie.title}</div>
-            <div className="mt-1 text-xs text-zinc-400">
+            <img
+              className="w-full object-cover"
+              src={getImageUrl(movie.poster_path, "w500")}
+              alt="alt"
+            />
+            <div className="text-sm font-medium text-primary">
+              {movie.title}
+            </div>
+            <div className="mt-1 text-xs text-secondary">
               {movie.vote_average.toFixed(1)}
             </div>
           </Link>
@@ -30,3 +39,5 @@ export const HomePage = () => {
     </div>
   );
 };
+
+export default HomePage;

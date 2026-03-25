@@ -6,10 +6,10 @@ export const store = configureStore({
   reducer: {
     auth: authReducer,
 
-    [tmdbApi.reducerPath]: tmdbApi.reducer
+    [tmdbApi.reducerPath]: tmdbApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(tmdbApi.middleware)
+    getDefaultMiddleware().concat(tmdbApi.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;
