@@ -1,0 +1,4 @@
+.back-button {
+  @apply flex fixed top-26 left-0 uppercase cursor-pointer py-1 pr-2.5 z-10 3xl:left-26
+    bg-button-primary hover:bg-button-primary-hover;
+}

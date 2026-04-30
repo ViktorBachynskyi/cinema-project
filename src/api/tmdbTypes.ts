@@ -23,6 +23,10 @@ export interface Genre {
   name: string;
 }
 
+export type GenresResponse = {
+  genres: Genre[];
+};
+
 export interface ProductionCompany {
   id: number;
   logo_path: string | null;
@@ -77,6 +81,13 @@ export interface CrewMember {
   adult?: boolean;
 }
 
+export interface Image {
+  aspect_ratio: number;
+  file_path: string;
+  height: number;
+  width: number;
+}
+
 export interface MovieDetails {
   adult: boolean;
   backdrop_path: string | null;
@@ -88,9 +99,9 @@ export interface MovieDetails {
     crew: CrewMember[]
   },
   images?: {
-    backdrops: any[];
-    logos: any[];
-    posters: any[];
+    backdrops: Image[];
+    logos: Image[];
+    posters: Image[];
   }
   homepage: string | null;
   id: number;

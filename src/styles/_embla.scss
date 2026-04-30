@@ -1,0 +1,27 @@
+.embla__viewport {
+  overflow: hidden;
+}
+
+.embla__container {
+  display: flex;
+  margin-left: calc(var(--slide-spacing) * -1);
+  touch-action: pan-y pinch-zoom;
+}
+
+.embla__slide {
+  flex: 0 0 240px;
+  min-width: 0;
+  padding-left: var(--slide-spacing);
+}
+
+.embla__navigation {
+  @apply flex justify-center gap-3 py-4;
+}
+
+.embla__button {
+  @apply flex items-center justify-center w-8 h-8 bg-button-secondary rounded-sm hover:bg-button-secondary-hover cursor-pointer;
+
+  svg {
+    @apply w-5 h-5;
+  }
+}

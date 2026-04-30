@@ -1,0 +1,124 @@
+.search-page__search {
+  @apply flex gap-4;
+}
+
+.search-page__search-input {
+  @apply w-full h-12 bg-bg-app rounded-2xl border border-border-default hover:border-border-hover
+    focus-visible:border-border-hover focus-visible:outline-border-hover px-4;
+}
+
+.search-page__search-button,
+.search-page__filters-apply-btn {
+  @apply h-12 cursor-pointer text-text-primary hover:text-text-primary-hover rounded-2xl border border-border-default hover:border-border-hover px-10;
+}
+
+.search-page__results-n-filters {
+  @apply flex gap-10;
+}
+
+.search-page__filters {
+  @apply w-1/4 shrink-0;
+}
+
+.search-page__filters-block {
+  @apply flex flex-col gap-1 mb-4;
+}
+
+.search-page__filter-title {
+  @apply text-xl mb-2;
+}
+
+.search-page__filter-genres {
+  @apply grid xl:grid-cols-2;
+}
+
+.search-page__filter-checkbox {
+  @apply flex gap-1;
+}
+
+.search-page__filters-block select {
+  @apply w-full py-2 px-4 rounded-2xl border border-border-default text-white bg-bg-app cursor-pointer hover:border-border-hover
+    focus:outline-0 focus-visible:border-border-hover focus-visible:outline-border-hover;
+
+  appearance: none;
+}
+
+.search-page__filters-block select::-webkit-scrollbar {
+  display: none;
+}
+
+.search-page__filter-range {
+  @apply flex items-center gap-4;
+
+  input {
+    @apply w-full bg-bg-app rounded-2xl border border-border-default hover:border-border-hover
+    focus-visible:border-border-hover focus-visible:outline-border-hover py-2 px-4;
+  }
+
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}
+
+.search-page__filters-apply-btn {
+  @apply w-full;
+}
+
+.search-page__movies-list {
+  @apply flex flex-col gap-8;
+}
+
+.search-page__movie {
+  @apply flex items-center gap-8;
+
+  img {
+    @apply max-w-[140px] rounded-2xl border border-border-default transform transition-transform duration-500 ease-in-out;
+  }
+
+  img:hover {
+    @apply -translate-y-1;
+  }
+}
+
+.search-page__movie-info {
+  @apply flex flex-col items-start gap-2 text-text-secondary;
+
+  svg {
+    @apply absolute top-0 left-0;
+  }
+}
+
+.search-page__movie-title {
+  @apply text-xl font-medium text-white hover:text-text-primary;
+}
+
+.search-page__rating {
+  @apply relative flex items-end gap-1 pl-6;
+}
+
+.search-page__pagination {
+  @apply flex justify-center mt-15;
+}
+
+.pagination {
+  @apply flex items-center gap-3 mt-20;
+}
+
+.pagination__item {
+  @apply min-w-10 h-10 cursor-pointer flex items-center justify-center text-lg rounded-xl text-text-primary border border-border-default
+    transition-all duration-300 px-3;
+
+  &:hover:not(:disabled) {
+    @apply text-white border-border-hover outline-border-hover;
+  }
+
+  &:disabled {
+    @apply cursor-default opacity-50;
+  }
+
+  &.isActive {
+    @apply text-white border-0 scale-120;
+  }
+}

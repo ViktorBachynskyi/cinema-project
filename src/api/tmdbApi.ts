@@ -1,12 +1,12 @@
-
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { TMDB_BASE_URL, TMDB_API_KEY } from "./tmdbConfig";
-import type { MovieDetails, MoviesResponse } from "./tmdbTypes";
+import type { GenresResponse, MovieDetails, MoviesResponse } from "./tmdbTypes";
+import type { Person } from "@/pages/PersonDetailsPage/PersonDetailsPage";
 
 export const tmdbApi = createApi({
   reducerPath: "tmdbApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: TMDB_BASE_URL
+    baseUrl: TMDB_BASE_URL,
   }),
   endpoints: (builder) => ({
     getMovies: builder.query<MoviesResponse, Record<string, any> | void>({
@@ -18,7 +18,7 @@ export const tmdbApi = createApi({
         },
       }),
     }),
-    getMovieWithDetails: builder.query<MovieDetails,{ id: string; params?: Record<string, any> }>({
+    getMovieWithDetails: builder.query<MovieDetails,{ id: string; params?: Record<string, any> }> ({
       query: ({ id, params = {} }) => {
         const defaultAppend = ["credits", "videos", "images"];
 
@@ -38,7 +38,48 @@ export const tmdbApi = createApi({
         };
       },
     }),
+    getPersonWithDetails: builder.query<Person,{ id: string; params?: Record<string, any> }>({
+      query: ({ id, params = {} }) => {
+        const defaultAppend = ["movie_credits", "images", "external_ids"];
+
+        const extraAppend = params.append_to_response
+          ? params.append_to_response.split(",")
+          : [];
+
+        const append_to_response = [...defaultAppend, ...extraAppend].join(",");
+
+        return {
+          url: `/person/${id}`,
+          params: {
+            api_key: TMDB_API_KEY,
+            ...params,
+            append_to_response,
+          },
+        };
+      },
+    }),
+    searchMovies: builder.query<MoviesResponse, Record<string, any>>({
+      query: (params) => ({
+        url: `/search/movie`,
+        params: {
+          api_key: TMDB_API_KEY,
+          ...params,
+        },
+      }),
+    }),
+    getGenres: builder.query<GenresResponse, void>({
+      query: () => ({
+        url: `/genre/movie/list`,
+        params: { api_key: TMDB_API_KEY },
+      }),
+    }),
+    getCountries: builder.query<{ iso_3166_1: string; english_name: string }[], void> ({
+      query: () => ({
+        url: `/configuration/countries`,
+        params: { api_key: TMDB_API_KEY },
+      }),
+    }),
   }),
 });
 
-export const { useGetMoviesQuery, useGetMovieWithDetailsQuery } = tmdbApi;
+export const { useGetMoviesQuery, useGetMovieWithDetailsQuery, useGetPersonWithDetailsQuery, useSearchMoviesQuery, useGetGenresQuery, useGetCountriesQuery } = tmdbApi;

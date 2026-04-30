@@ -1,6 +1,11 @@
 @import "./_variables.scss";
 @import "./_typography.scss";
+@import "./_embla.scss";
 
 @import "./pages/MovieDetailsPage.scss";
+@import "./pages/PersonDetailsPage.scss";
+@import "./pages/SearchPage.scss";
 
 @import "./components/Header.scss";
+@import "./components/Divider.scss";
+@import "./components/BackButton.scss";

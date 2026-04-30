@@ -1,67 +1,85 @@
 .movie-details {
-
 }
 
 .movie-details__main-info {
-    @apply flex gap-10 mb-10;
+  @apply flex gap-10 mb-20;
 }
 
 .movie-details__poster {
-    @apply rounded-md;
+  @apply rounded-sm;
 }
 
 .movie-details__info {
-    @apply w-full pt-2;
+  @apply w-full pt-2;
+
+  p {
+    @apply text-text-primary;
+  }
 }
 
 .movie-details__info-item {
-    @apply flex gap-2 py-2 px-4 rounded-md;
+  @apply flex gap-2 py-2 px-4 rounded-sm;
 
-    &:nth-child(odd) {
-        @apply bg-bg-surface;
+  &:nth-child(odd) {
+    @apply bg-bg-surface;
+  }
+
+  span:first-child {
+    @apply xl:w-1/7 shrink-0;
+  }
+
+  span:last-child {
+    @apply font-bold text-text-primary;
+  }
+
+  a {
+    @apply font-bold text-text-primary;
+
+    &:hover {
+      @apply underline;
     }
-
-    span:first-child {
-        @apply xl:w-1/7 shrink-0;
-    }
-
-    span:last-child {
-        @apply font-bold;
-    }
-
-    a {
-        @apply font-bold;
-
-        &:hover {
-            @apply underline;
-        }
-    }
+  }
 }
 
 .movie-details__media {
-    @apply w-full flex gap-10;
+  @apply w-full flex gap-10 mb-20;
 }
 
 .movie-details__images {
-    @apply grid grid-cols-3 gap-3;
+  @apply grid grid-cols-3 gap-3;
 }
 
 .movie-details__image-item {
-    @apply w-full h-auto rounded-md object-cover hover:scale-105 transition-transform cursor-pointer;
+  @apply w-full h-auto rounded-sm object-cover hover:scale-105 transition-transform cursor-pointer;
 }
 
 .movie-details__trailer {
-    @apply w-1/2 shrink-0;
+  @apply w-1/2 shrink-0;
 }
 
 .movie-details__video-container {
-    @apply aspect-video;
+  @apply aspect-video;
 
-    iframe {
-        @apply rounded-md;
-    }
+  iframe {
+    @apply rounded-sm;
+  }
 }
 
-.line-break {
-    @apply h-px bg-bg-surface my-4;
+.movie-details__actors-carousel {
+}
+
+.movie-details__actor-card {
+  @apply h-full cursor-pointer;
+
+  p:first-of-type {
+    @apply text-white text-xl;
+  }
+
+  p {
+    @apply text-text-secondary;
+  }
+}
+
+.movie-details__actor-photo {
+  @apply h-[336px] rounded-2xl object-cover mb-2;
 }

@@ -1,5 +1,30 @@
 .header {
-  @apply flex;
+  @apply h-15 bg-bg-header-footer mb-15;
+}
+
+.header__content {
+  @apply h-full flex items-center justify-between gap-4 max-w-360 mx-auto px-4 sm:px-10;
+}
+
+.header__left-side {
+  @apply flex items-baseline gap-6;
+}
+
+.header__right-side {
+  @apply flex items-center gap-6;
+}
+
+
+.header__logo {
+  @apply relative;
+
+  p {
+    @apply text-white text-xl leading-4.5 ml-9;
+  }
+
+  svg {
+    @apply absolute -top-1.25;
+  }
 }
 
 .header__navigation {
@@ -7,13 +32,12 @@
 }
 
 .header__navigation-item {
-  @apply text-text-primary cursor-pointer;
-
-  &.logo {
-    @apply text-4xl font-bold italic tracking-wide;
-  }
+  @apply text-text-primary cursor-pointer text-[18px] leading-4.5;
 
   &:hover {
-    @apply text-text-primary-hover;
+    @apply text-white;
   }
+}
+
+.header__search-button {
 }

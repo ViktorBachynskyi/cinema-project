@@ -9,6 +9,8 @@
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
     "@reduxjs/toolkit": "^2.11.2",
+    "classnames": "^2.5.1",
+    "embla-carousel-react": "^8.6.0",
     "firebase": "^12.9.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
@@ -28,7 +30,7 @@
     "prettier": "^3.8.1",
     "sass-embedded": "^1.97.3",
     "tailwindcss": "^4.2.1",
-    "typescript": "^5.9.2",
+    "typescript": "^5.9.3",
     "vite": "^7.1.7",
     "vite-tsconfig-paths": "^5.1.4"
   }

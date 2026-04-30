@@ -1,9 +1,16 @@
 import { useGetMovieWithDetailsQuery } from "@/api/tmdbApi";
 import { getImageUrl } from "@/api/tmdbConfig";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import useEmblaCarousel from "embla-carousel-react";
+import { Divider } from "@/components/Divider";
 
 const MovieDetailsPage = () => {
   const { id } = useParams();
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    loop: false,
+    dragFree: true,
+    containScroll: "trimSnaps",
+  });
 
   const {
     data: movie,
@@ -15,28 +22,21 @@ const MovieDetailsPage = () => {
   const director = movie?.credits?.crew.find(
     (crewMember) => crewMember.job === "Director",
   );
+  const backdrops = (movie?.images?.backdrops ?? []).filter((img) => {
+    return img.width >= 2100 && img.width / img.height >= 1.5;
+  });
+  const sortedBySize = backdrops.sort(
+    (a, b) => b.width * b.height - a.width * a.height,
+  );
+  const previewImages = sortedBySize.slice(0, 9);
+  const trailer = movie?.videos?.results?.find(
+    (v: any) => v.type === "Trailer" && v.site === "YouTube",
+  );
 
   if (isLoading) return <div>Loading...</div>;
   if (isError || !movie) return <div>Failed to load movie</div>;
 
   console.log(movie);
-
-  const backdrops = (movie?.images?.backdrops ?? []).filter((img) => {
-    // exclude poster-like images
-    return img.width >= 2100 && img.width / img.height >= 1.5;
-  });
-
-  // Sort by total pixel area (width * height) descending
-  const sortedBySize = backdrops.sort(
-    (a, b) => b.width * b.height - a.width * a.height,
-  );
-
-  // Take first 6 images
-  const previewImages = sortedBySize.slice(0, 9);
-
-  const trailer = movie.videos?.results?.find(
-    (v: any) => v.type === "Trailer" && v.site === "YouTube",
-  );
 
   return (
     <section className="movie-details">
@@ -47,11 +47,12 @@ const MovieDetailsPage = () => {
           className="movie-details__poster w-[342px]"
           src={getImageUrl(movie.poster_path, "w342")}
           alt={movie.title}
+          fetchPriority="high"
         />
 
         <div className="movie-details__info">
           <p>{movie.overview}</p>
-          <div className="line-break"></div>
+          <Divider />
           <p className="movie-details__info-item">
             <span>Year:</span>
             <span>
@@ -81,7 +82,7 @@ const MovieDetailsPage = () => {
                 .slice(0, 20)
                 .map((castMember, index, array) => (
                   <>
-                    <a key={castMember.id} href={`/actor/${castMember.id}`}>
+                    <a key={castMember.id} href={`/cast/${castMember.id}`}>
                       {castMember.original_name}
                     </a>
                     {index !== array.length - 1 && <span>, </span>}
@@ -104,33 +105,65 @@ const MovieDetailsPage = () => {
         </div>
       </div>
 
-      <h2>Photos & Videos</h2>
-      <div className="movie-details__media">
-        <div className="movie-details__images">
-          {" "}
-          {/* TODO: open all images, videos buttons */}
-          {previewImages?.map((image, index) => (
-            <img // TODO: clickable img with modal
-              key={index}
-              src={`https://image.tmdb.org/t/p/w300${image.file_path}`}
-              alt="Movie image"
-              className="movie-details__image-item"
-            />
-          ))}
-        </div>
-        {trailer && (
-          <div className="movie-details__trailer">
-            <div className="movie-details__video-container">
-              <iframe
-                width="100%"
-                height="100%"
-                src={`https://www.youtube.com/embed/${trailer.key}`}
-                title="Trailer"
-                allowFullScreen
-              />
+      {(previewImages?.length > 0 || trailer) && (
+        <>
+          <h2>Photos & Videos</h2>
+          <div className="movie-details__media">
+            <div className="movie-details__images">
+              {" "}
+              {/* TODO: open all images, videos buttons */}
+              {previewImages?.map((image, index) => (
+                <img // TODO: clickable img with modal
+                  key={index}
+                  src={`https://image.tmdb.org/t/p/w300${image.file_path}`}
+                  alt="Movie image"
+                  className="movie-details__image-item"
+                />
+              ))}
             </div>
+            {trailer && (
+              <div className="movie-details__trailer">
+                <div className="movie-details__video-container">
+                  <iframe
+                    width="100%"
+                    height="100%"
+                    src={`https://www.youtube.com/embed/${trailer.key}`}
+                    title="Trailer"
+                    allowFullScreen
+                  />
+                </div>
+              </div>
+            )}
           </div>
-        )}
+        </>
+      )}
+
+      <h2>Top Cast</h2>
+      <div className="movie-details__actors-carousel embla">
+        <div className="embla__viewport" ref={emblaRef}>
+          <div className="embla__container">
+            {movie?.credits?.cast.map((actor) => (
+              <div className="embla__slide" key={actor.id}>
+                <Link
+                  to={`/cast/${actor.id}`}
+                  className="movie-details__actor-card"
+                >
+                  <img
+                    className="movie-details__actor-photo w-[240px]"
+                    src={
+                      actor.profile_path
+                        ? getImageUrl(actor.profile_path)
+                        : "https://upload.wikimedia.org/wikipedia/commons/2/2f/No-photo-m.png"
+                    }
+                    alt={`${actor.original_name} photo`}
+                  />
+                  <p>{actor.original_name}</p>
+                  <p>{actor.character}</p>
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );

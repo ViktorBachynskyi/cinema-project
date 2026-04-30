@@ -1,0 +1,10 @@
+- generate design for website using ai (consider using codex as code assistant)
+- routing back
+- movie details page - actors slider
+- actor details page - movies with pagination
+- header search and its logic
+- search page and minimal filters (use store if possible)
+- find ways to use store (prepare list)
+- create user with all info and profile page
+- save user and user favorite movies in firestore and store and create favorites page and show it conditionally for logged in user
+- on homepage show 10 favorite movies

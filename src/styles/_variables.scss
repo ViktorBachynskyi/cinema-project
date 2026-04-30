@@ -1,5 +1,6 @@
 @theme {
   --font-quantico: "Quantico", sans-serif;
+  --slide-spacing: 16px;
 
 /* --- Backgrounds --- */
   --color-bg-app: #121217;                /* Dark Night: deep dark gray/black */
@@ -35,4 +36,6 @@
   --color-error-hover: #FF8C8C;
   --color-warning: #FFD166;               /* gold warning */
   --color-warning-hover: #FFE69A;
+
+  --breakpoint-3xl: 1920px;
 }
