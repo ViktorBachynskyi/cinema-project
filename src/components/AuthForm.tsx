@@ -3,13 +3,16 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useMemo, useState, type FC } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { FirebaseError } from "firebase/app";
 import {
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
   signInWithEmailAndPassword,
   signInWithPopup,
+  updateProfile,
 } from "firebase/auth";
-import { auth } from "@/firebase";
+import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
+import { auth, db } from "@/firebase";
 
 interface FormValues {
   email: string;
@@ -21,6 +24,16 @@ interface FormValues {
 
 interface AuthFormProps {
   mode: "signIn" | "signUp";
+};
+
+const getAuthErrorMessage = (err: unknown, isSignUp: boolean) => {
+  if (err instanceof FirebaseError && err.code === "permission-denied") {
+    return "Account was created, but the profile could not be saved. Please check Firestore permissions.";
+  }
+
+  return isSignUp
+    ? "Something went wrong while creating your account."
+    : "Something went wrong. Please check your credentials.";
 };
 
 const AuthForm: FC<AuthFormProps> = ({ mode }) => {
@@ -62,7 +75,26 @@ const AuthForm: FC<AuthFormProps> = ({ mode }) => {
 
     try {
       if (isSignUp) {
-        await createUserWithEmailAndPassword(auth, data.email, data.password);
+        const userCredential = await createUserWithEmailAndPassword(
+          auth,
+          data.email,
+          data.password,
+        );
+
+        await updateProfile(userCredential.user, {
+          displayName: data.displayName,
+        });
+
+        await setDoc(doc(db, "users", userCredential.user.uid), {
+          uid: userCredential.user.uid,
+          email: data.email,
+          fullName: data.fullName,
+          displayName: data.displayName,
+          age: data.age ?? null,
+          favorites: [],
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        });
       } else {
         await signInWithEmailAndPassword(auth, data.email, data.password);
       }
@@ -70,20 +102,36 @@ const AuthForm: FC<AuthFormProps> = ({ mode }) => {
       navigate("/");
     } catch (err) {
       console.error(err);
-      setAuthError("Something went wrong. Please check your credentials.");
+      setAuthError(getAuthErrorMessage(err, isSignUp));
     }
   };
 
   const handleGoogleLogin = async () => {
-    setAuthError(null)
+    setAuthError(null);
 
     try {
       const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
+      const userCredential = await signInWithPopup(auth, provider);
+      const userRef = doc(db, "users", userCredential.user.uid);
+      const userDoc = await getDoc(userRef);
+
+      if (!userDoc.exists()) {
+        await setDoc(userRef, {
+          uid: userCredential.user.uid,
+          email: userCredential.user.email,
+          fullName: userCredential.user.displayName,
+          displayName: userCredential.user.displayName,
+          age: null,
+          favorites: [],
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        });
+      }
+
       navigate("/");
     } catch (err: any) {
       console.error(err);
-      setAuthError("Something went wrong with Google login.");
+      setAuthError(getAuthErrorMessage(err, false));
     }
   };
 

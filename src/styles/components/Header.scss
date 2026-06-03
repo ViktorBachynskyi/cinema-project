@@ -40,4 +40,27 @@
 }
 
 .header__search-button {
+  @apply h-10 w-10 shrink-0 cursor-pointer rounded-full border border-border-default text-text-primary
+    transition-colors duration-300 hover:border-border-hover hover:text-white flex items-center justify-center;
+}
+
+.header__search {
+  @apply flex items-center justify-end overflow-hidden rounded-full transition-all duration-300 ease-in-out w-10;
+
+  &.isOpen {
+    @apply gap-2 border border-border-default pl-5 pr-2 w-[260px];
+
+    .header__search-button {
+      @apply border-0;
+    }
+
+    .header__search-input {
+      @apply opacity-100 pointer-events-auto w-full;
+    }
+  }
+}
+
+.header__search-input {
+  @apply h-10 bg-transparent text-white outline-none transition-all duration-300 placeholder:text-text-secondary
+    opacity-0 pointer-events-none w-0;
 }

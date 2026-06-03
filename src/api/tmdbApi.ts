@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { TMDB_BASE_URL, TMDB_API_KEY } from "./tmdbConfig";
-import type { GenresResponse, MovieDetails, MoviesResponse } from "./tmdbTypes";
+import type { GenresResponse, Movie, MovieDetails, MoviesResponse } from "./tmdbTypes";
 import type { Person } from "@/pages/PersonDetailsPage/PersonDetailsPage";
 
 export const tmdbApi = createApi({
@@ -79,7 +80,43 @@ export const tmdbApi = createApi({
         params: { api_key: TMDB_API_KEY },
       }),
     }),
+    getMoviesByIds: builder.query<Movie[], number[]>({
+      async queryFn(ids, _api, _extraOptions, fetchWithBQ) {
+        if (!ids.length) {
+          return { data: [] };
+        }
+
+        const results = await Promise.all(
+          ids.map((id) =>
+            fetchWithBQ({
+              url: `/movie/${id}`,
+              params: { api_key: TMDB_API_KEY },
+            }),
+          ),
+        );
+
+        const movies: Movie[] = [];
+
+        for (const result of results) {
+          if (result.error) {
+            return { error: result.error as FetchBaseQueryError };
+          }
+
+          movies.push(result.data as Movie);
+        }
+
+        return { data: movies };
+      },
+    }),
   }),
 });
 
-export const { useGetMoviesQuery, useGetMovieWithDetailsQuery, useGetPersonWithDetailsQuery, useSearchMoviesQuery, useGetGenresQuery, useGetCountriesQuery } = tmdbApi;
+export const {
+  useGetMoviesQuery,
+  useGetMovieWithDetailsQuery,
+  useGetPersonWithDetailsQuery,
+  useSearchMoviesQuery,
+  useGetGenresQuery,
+  useGetCountriesQuery,
+  useGetMoviesByIdsQuery,
+} = tmdbApi;

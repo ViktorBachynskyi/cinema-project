@@ -5,13 +5,16 @@ import { store } from "./store/index";
 import { AppRouter } from "./routes/AppRouter";
 import "./styles/index.css";
 import { AuthProvider } from "./AuthProvider";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <Provider store={store}>
-      <AuthProvider>
-        <AppRouter />
-      </AuthProvider>
-    </Provider>
+    <ErrorBoundary fallback={<div>Something went wrong.</div>}>
+      <Provider store={store}>
+        <AuthProvider>
+          <AppRouter />
+        </AuthProvider>
+      </Provider>
+    </ErrorBoundary>
   </React.StrictMode>,
 );

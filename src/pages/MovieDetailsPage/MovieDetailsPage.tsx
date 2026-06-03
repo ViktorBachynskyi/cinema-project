@@ -1,8 +1,10 @@
 import { useGetMovieWithDetailsQuery } from "@/api/tmdbApi";
 import { getImageUrl } from "@/api/tmdbConfig";
-import { Link, useParams } from "react-router-dom";
-import useEmblaCarousel from "embla-carousel-react";
 import { Divider } from "@/components/Divider";
+import { useFavorites } from "@/hooks/useFavorites";
+import useEmblaCarousel from "embla-carousel-react";
+import cn from "classnames";
+import { Link, useParams } from "react-router-dom";
 
 const MovieDetailsPage = () => {
   const { id } = useParams();
@@ -19,6 +21,7 @@ const MovieDetailsPage = () => {
   } = useGetMovieWithDetailsQuery({
     id: id!,
   });
+  const { isFavorite, toggleFavorite, isAuthenticated } = useFavorites();
   const director = movie?.credits?.crew.find(
     (crewMember) => crewMember.job === "Director",
   );
@@ -43,12 +46,34 @@ const MovieDetailsPage = () => {
       <h1>{movie.title}</h1>
 
       <div className="movie-details__main-info">
-        <img
-          className="movie-details__poster w-[342px]"
-          src={getImageUrl(movie.poster_path, "w342")}
-          alt={movie.title}
-          fetchPriority="high"
-        />
+        <div className="movie-details__poster-container relative">
+          <img
+            className="movie-details__poster w-[342px]"
+            src={getImageUrl(movie.poster_path, "w342")}
+            alt={movie.title}
+            fetchPriority="high"
+          />
+          {isAuthenticated && (
+            <button
+              type="button"
+              className={cn("movie-details__favorite-button", {
+                isFavorite: isFavorite(movie.id),
+              })}
+              aria-label={
+                isFavorite(movie.id)
+                  ? "Remove from favorites"
+                  : "Add to favorites"
+              }
+              onClick={() =>
+                toggleFavorite(movie.id)
+              }
+            >
+              <span className="material-symbols-sharp material-symbols">
+                favorite
+              </span>
+            </button>
+          )}
+        </div>
 
         <div className="movie-details__info">
           <p>{movie.overview}</p>

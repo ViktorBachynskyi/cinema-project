@@ -17,6 +17,21 @@
   }
 }
 
+.movie-details__favorite-button {
+  @apply absolute top-4 right-4 cursor-pointer;
+
+  .material-symbols-sharp {
+    @apply text-4xl;
+  }
+
+  &:hover .material-symbols-sharp,
+  &.isFavorite .material-symbols-sharp {
+    @apply text-button-primary-hover;
+
+    font-variation-settings: 'FILL' 1;
+  }
+}
+
 .movie-details__info-item {
   @apply flex gap-2 py-2 px-4 rounded-sm;
 

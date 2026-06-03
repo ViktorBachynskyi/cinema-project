@@ -8,6 +8,8 @@ const HomePage = lazy(() => import("@/pages/HomePage/HomePage"));
 const SearchPage = lazy(() => import("@/pages/SearchPage/SearchPage"));
 const SignIn = lazy(() => import("@/pages/SignIn/SignIn"));
 const SignUp = lazy(() => import("@/pages/SignUp/SignUp"));
+const UserPage = lazy(() => import("@/pages/UserPage/UserPage"));
+const FavoritesPage = lazy(() => import("@/pages/FavoritesPage/FavoritesPage"));
 const MovieDetailsPage = lazy(
   () => import("@/pages/MovieDetailsPage/MovieDetailsPage"),
 );
@@ -41,6 +43,14 @@ const router = createBrowserRouter([
         element: <SignUp />,
       },
       {
+        path: "user",
+        element: (
+          <ProtectedRoute>
+            <UserPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
         path: "movie/:id",
         element: <MovieDetailsPage />,
       },
@@ -52,7 +62,7 @@ const router = createBrowserRouter([
         path: "favorites",
         element: (
           <ProtectedRoute>
-            <div>Favorites page</div>
+            <FavoritesPage />
           </ProtectedRoute>
         ),
       },

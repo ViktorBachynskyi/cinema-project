@@ -3,6 +3,7 @@ export interface Movie {
   title: string;
   original_title?: string;
   overview: string;
+  genre_ids?: number[];
   poster_path: string | null;
   backdrop_path: string | null;
   release_date: string;

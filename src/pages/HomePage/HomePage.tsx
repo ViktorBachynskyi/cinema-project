@@ -1,5 +1,7 @@
 import { useGetMoviesQuery } from "@/api/tmdbApi";
 import { getImageUrl } from "@/api/tmdbConfig";
+import type { RootState } from "@/store";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 const HomePage = () => {
@@ -7,9 +9,12 @@ const HomePage = () => {
     page: 1,
     sort_by: "popularity.desc",
   });
+  const user = useSelector((state: RootState) => state.auth.user);
 
   if (isLoading) return <div>Loading...</div>;
   if (isError || !data) return <div>Failed to load movies</div>;
+
+  console.log(user);
 
   return (
     <div className="home">

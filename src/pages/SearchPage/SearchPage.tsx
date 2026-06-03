@@ -4,9 +4,12 @@ import {
   useGetMoviesQuery,
   useSearchMoviesQuery,
 } from "@/api/tmdbApi";
+import type { Movie } from "@/api/tmdbTypes";
 import { getImageUrl } from "@/api/tmdbConfig";
 import { Divider } from "@/components/Divider";
-import { useState } from "react";
+import { skipToken } from "@reduxjs/toolkit/query";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import cn from "classnames";
 import { rating_star_svg } from "./constant";
 
@@ -21,24 +24,21 @@ type MovieFilters = {
 };
 
 const SearchPage = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const urlQuery = searchParams.get("q")?.trim() || "";
   const [filters, setFilters] = useState<MovieFilters>({
     page: 1,
+    query: urlQuery || undefined,
   });
   const [appliedFilters, setAppliedFilters] = useState<MovieFilters>({
     page: 1,
+    query: urlQuery || undefined,
   });
 
-  const buildParams = (filters: MovieFilters) => {
+  const buildDiscoverParams = (filters: MovieFilters) => {
     const base = {
       page: filters.page || 1,
     };
-
-    if (filters.query?.trim()) {
-      return {
-        ...base,
-        query: filters.query.trim(),
-      };
-    }
 
     return {
       ...base,
@@ -51,11 +51,62 @@ const SearchPage = () => {
     };
   };
 
-  const params = buildParams(appliedFilters);
+  const buildSearchParams = (filters: MovieFilters) => ({
+    page: filters.page || 1,
+    query: filters.query?.trim() || "",
+    primary_release_year: filters.year,
+  });
 
-  const { data, isLoading } = appliedFilters.query?.trim()
-    ? useSearchMoviesQuery(params)
-    : useGetMoviesQuery(params);
+  const filterSearchResults = (movies: Movie[], filters: MovieFilters) => {
+    return movies.filter((movie) => {
+      const matchesGenres =
+        !filters.genre?.length ||
+        filters.genre.every((genreId) => movie.genre_ids?.includes(genreId));
+      const matchesYear =
+        !filters.year || movie.release_date?.startsWith(String(filters.year));
+      const matchesRatingMin =
+        filters.ratingMin === undefined ||
+        movie.vote_average >= filters.ratingMin;
+      const matchesRatingMax =
+        filters.ratingMax === undefined ||
+        movie.vote_average <= filters.ratingMax;
+
+      return (
+        matchesGenres &&
+        matchesYear &&
+        matchesRatingMin &&
+        matchesRatingMax
+      );
+    });
+  };
+
+  const isTitleSearch = Boolean(appliedFilters.query?.trim());
+  const discoverParams = buildDiscoverParams(appliedFilters);
+  const movieSearchParams = buildSearchParams(appliedFilters);
+
+  const { data: searchData, isLoading: isSearchLoading } = useSearchMoviesQuery(
+    isTitleSearch ? movieSearchParams : skipToken,
+  );
+  const { data: discoverData, isLoading: isDiscoverLoading } =
+    useGetMoviesQuery(isTitleSearch ? skipToken : discoverParams);
+
+  const data = useMemo(() => {
+    if (!isTitleSearch) return discoverData;
+    if (!searchData) return searchData;
+
+    const filteredResults = filterSearchResults(
+      searchData.results,
+      appliedFilters,
+    );
+
+    return {
+      ...searchData,
+      results: filteredResults,
+      total_results: filteredResults.length,
+    };
+  }, [appliedFilters, discoverData, isTitleSearch, searchData]);
+
+  const isLoading = isTitleSearch ? isSearchLoading : isDiscoverLoading;
 
   const { data: countries } = useGetCountriesQuery();
   const { data: genresData } = useGetGenresQuery();
@@ -76,6 +127,30 @@ const SearchPage = () => {
       page: 1,
     }));
   };
+
+  const applyFilters = () => {
+    const nextFilters = {
+      ...filters,
+      page: 1,
+    };
+    const trimmedQuery = nextFilters.query?.trim() || "";
+
+    setAppliedFilters(nextFilters);
+    setSearchParams(trimmedQuery ? { q: trimmedQuery } : {});
+  };
+
+  useEffect(() => {
+    setFilters((prev) => ({
+      ...prev,
+      query: urlQuery || undefined,
+      page: 1,
+    }));
+    setAppliedFilters((prev) => ({
+      ...prev,
+      query: urlQuery || undefined,
+      page: 1,
+    }));
+  }, [urlQuery]);
 
   const toggleGenre = (id: number) => {
     setFilters((prev) => {
@@ -111,12 +186,7 @@ const SearchPage = () => {
 
         <button
           className="search-page__search-button"
-          onClick={() =>
-            setAppliedFilters({
-              ...filters,
-              page: 1,
-            })
-          }
+          onClick={applyFilters}
         >
           Search
         </button>
@@ -201,12 +271,7 @@ const SearchPage = () => {
           <Divider className="my-6!" />
           <button
             className="search-page__filters-apply-btn"
-            onClick={() =>
-              setAppliedFilters({
-                ...filters,
-                page: 1,
-              })
-            }
+            onClick={applyFilters}
           >
             Apply Filters
           </button>

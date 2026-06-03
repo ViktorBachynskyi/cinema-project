@@ -1,11 +1,11 @@
+import PersonPhotosModal from "@/components/PersonPhotosModal/PersonPhotosModal";
 import { Link, useParams } from "react-router-dom";
-import useEmblaCarousel from "embla-carousel-react";
 import { useGetPersonWithDetailsQuery } from "@/api/tmdbApi";
 import { getImageUrl } from "@/api/tmdbConfig";
 import type { Image } from "@/api/tmdbTypes";
 import { formatBiography } from "@/utils/formatBiography";
 import { Divider } from "@/components/Divider";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export interface PersonMovieCredit {
   id: number;
@@ -46,11 +46,15 @@ export interface Person {
   };
 }
 
+const PREVIEW_PHOTOS_LIMIT = 5;
+
 const PersonDetailsPage = () => {
   const { id } = useParams();
   const observerRef = useRef<HTMLDivElement | null>(null);
   const ITEMS_PER_BATCH = 15;
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_BATCH);
+  const [isGalleryOpen, setIsGalleryOpen] = useState(false);
+  const [activePhotoIndex, setActivePhotoIndex] = useState(0);
 
   const {
     data: person,
@@ -60,8 +64,19 @@ const PersonDetailsPage = () => {
 
   const movies = person?.movie_credits?.cast || [];
   const visibleMovies = movies.slice(0, visibleCount);
+  const photos = person?.images.profiles ?? [];
+  const previewPhotos = photos.slice(0, PREVIEW_PHOTOS_LIMIT);
 
   const formattedBio = formatBiography(person?.biography);
+
+  const openGallery = (index: number) => {
+    setActivePhotoIndex(index);
+    setIsGalleryOpen(true);
+  };
+
+  const closeGallery = () => {
+    setIsGalleryOpen(false);
+  };
 
   useEffect(() => {
     const node = observerRef.current;
@@ -84,8 +99,6 @@ const PersonDetailsPage = () => {
 
   if (isLoading) return <div>Loading...</div>;
   if (isError || !person) return <div>Failed to load movie</div>;
-
-  console.log("person", person);
 
   return (
     <section className="person-details">
@@ -124,10 +137,12 @@ const PersonDetailsPage = () => {
                 <span>Birthday</span>
                 <span>{person.birthday}</span>
               </div>
-              {person.deathday && <div className="personal-info__item">
-                <span>Died</span>
-                <span>{person.deathday}</span>
-              </div>}
+              {person.deathday && (
+                <div className="personal-info__item">
+                  <span>Died</span>
+                  <span>{person.deathday}</span>
+                </div>
+              )}
               <div className="personal-info__item">
                 <span>Place of Birth</span>
                 <span>{person.place_of_birth}</span>
@@ -137,43 +152,50 @@ const PersonDetailsPage = () => {
         </div>
       </div>
 
-      {person?.images.profiles?.length > 1 && (
+      {photos.length > 1 && (
         <>
           <Divider />
           <h2>Photos</h2>
           <div className="personal-details__photos">
-            {person?.images.profiles?.slice(0, 5).map((image, index, array) => {
-              const photoButton =
-                index === array.length - 1 &&
-                person?.images?.profiles.length > 5;
+            {previewPhotos.map((image, index) => {
+              const showMoreOverlay =
+                index === previewPhotos.length - 1 &&
+                photos.length > PREVIEW_PHOTOS_LIMIT;
 
               return (
-                <React.Fragment key={image.file_path || index}>
-                  {photoButton ? ( // TODO: modal with photos
-                    <button className="personal-details__photo-button">
-                      <img
-                        src={getImageUrl(image.file_path, "w500")}
-                        alt="Movie image"
-                        className="personal-details__photo-item"
-                      />
-                      <div className="personal-details__photo-button-overlay"></div>
+                <button
+                  key={image.file_path || index}
+                  type="button"
+                  className="personal-details__photo-button"
+                  aria-label={`Open photo ${index + 1}`}
+                  onClick={() => openGallery(index)}
+                >
+                  <img
+                    src={getImageUrl(image.file_path, "w500")}
+                    alt={`${person.name} photo ${index + 1}`}
+                    className="personal-details__photo-item"
+                  />
+                  {showMoreOverlay && (
+                    <>
+                      <div className="personal-details__photo-button-overlay" />
                       <span className="personal-details__photo-button-count">
-                        + {person?.images.profiles?.length}
+                        + {photos.length - PREVIEW_PHOTOS_LIMIT}
                       </span>
-                    </button>
-                  ) : (
-                    <img
-                      src={getImageUrl(image.file_path, "w500")}
-                      alt="Movie image"
-                      className="personal-details__photo-item"
-                    />
+                    </>
                   )}
-                </React.Fragment>
+                </button>
               );
             })}
           </div>
         </>
       )}
+
+      <PersonPhotosModal
+        isOpen={isGalleryOpen}
+        photos={photos}
+        initialIndex={activePhotoIndex}
+        onClose={closeGallery}
+      />
 
       <Divider />
 
