@@ -1,0 +1,43 @@
+.person-photos-modal__backdrop {
+  @apply fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4;
+}
+
+.person-photos-modal {
+  @apply relative flex w-full max-w-5xl flex-col gap-6 rounded-2xl border border-border-default bg-bg-app p-6;
+}
+
+.person-photos-modal__close {
+  @apply absolute top-4 right-4 z-10 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-border-default text-text-primary transition-colors hover:border-border-hover hover:text-white;
+}
+
+.person-photos-modal__main-container {
+  @apply items-center;
+}
+
+.person-photos-modal__main-slide {
+  @apply flex-[0_0_100%] flex justify-center;
+}
+
+.person-photos-modal__main-image {
+  @apply max-h-[70vh] w-auto max-w-full rounded-2xl object-contain;
+}
+
+.person-photos-modal__thumbs-container {
+  @apply gap-3 ml-0;
+}
+
+.person-photos-modal__thumb-slide {
+  @apply w-[100px] shrink-0;
+}
+
+.person-photos-modal__thumb {
+  @apply w-full cursor-pointer overflow-hidden rounded-xl border border-border-default opacity-60 transition-all hover:opacity-100;
+
+  &.isActive {
+    @apply border-border-hover opacity-100;
+  }
+}
+
+.person-photos-modal__thumb-image {
+  @apply aspect-square w-full object-cover;
+}
