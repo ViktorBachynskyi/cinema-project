@@ -81,6 +81,11 @@
 }
 
 .movie-details__actors-carousel {
+  @apply mb-20;
+}
+
+.movie-details__recommendations-carousel {
+  @apply mb-20;
 }
 
 .movie-details__actor-card {
@@ -97,4 +102,55 @@
 
 .movie-details__actor-photo {
   @apply h-[336px] rounded-2xl object-cover mb-2;
+}
+
+.movie-details__recommendation-card {
+  @apply h-full cursor-pointer;
+
+  p:first-of-type {
+    @apply text-white text-xl;
+  }
+
+  p {
+    @apply text-text-secondary;
+  }
+}
+
+.movie-details__recommendation-poster {
+  @apply h-[336px] rounded-2xl object-cover mb-2;
+}
+
+.movie-details__reviews {
+  @apply flex flex-col gap-4 mb-20;
+}
+
+.movie-details__review {
+  @apply w-full rounded-2xl border border-border-default bg-bg-surface p-6;
+
+  &.isExpanded {
+    @apply bg-bg-app border-white text-text-primary;
+  }
+}
+
+.movie-details__review-author {
+  @apply mb-3 text-lg font-medium text-white;
+}
+
+.movie-details__review-content {
+  @apply whitespace-pre-line text-text-primary leading-relaxed;
+
+  &.isClamped {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+  }
+}
+
+.movie-details__review-toggle {
+  @apply mt-3 cursor-pointer text-sm text-text-link transition-colors hover:text-text-link-hover;
+}
+
+.movie-details__reviews-show-all {
+  @apply text-lg w-auto mx-auto text-text-primary hover:cursor-pointer hover:text-white py-2;
 }

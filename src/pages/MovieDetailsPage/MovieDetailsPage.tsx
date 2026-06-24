@@ -1,14 +1,29 @@
 import { useGetMovieWithDetailsQuery } from "@/api/tmdbApi";
+import type { Review } from "@/api/tmdbTypes";
 import { getImageUrl } from "@/api/tmdbConfig";
 import { Divider } from "@/components/Divider";
 import { useFavorites } from "@/hooks/useFavorites";
 import useEmblaCarousel from "embla-carousel-react";
 import cn from "classnames";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import React from "react";
+
+const INITIAL_REVIEWS_COUNT = 3;
+const REVIEW_PREVIEW_CHAR_LIMIT = 280;
 
 const MovieDetailsPage = () => {
   const { id } = useParams();
-  const [emblaRef, emblaApi] = useEmblaCarousel({
+  const [expandedReviewIds, setExpandedReviewIds] = useState<Set<string>>(
+    new Set(),
+  );
+  const [showAllReviews, setShowAllReviews] = useState(false);
+  const [emblaRef] = useEmblaCarousel({
+    loop: false,
+    dragFree: true,
+    containScroll: "trimSnaps",
+  });
+  const [recommendationsRef] = useEmblaCarousel({
     loop: false,
     dragFree: true,
     containScroll: "trimSnaps",
@@ -36,8 +51,39 @@ const MovieDetailsPage = () => {
     (v: any) => v.type === "Trailer" && v.site === "YouTube",
   );
 
+  useEffect(() => {
+    setExpandedReviewIds(new Set());
+    setShowAllReviews(false);
+  }, [id]);
+
+  const reviews = movie?.reviews?.results ?? [];
+  const recommendations = movie?.recommendations?.results ?? [];
+  const visibleReviews = showAllReviews
+    ? reviews
+    : reviews.slice(0, INITIAL_REVIEWS_COUNT);
+  const hasMoreReviews = reviews.length > INITIAL_REVIEWS_COUNT;
+
+  const isReviewLong = (content: string) =>
+    content.length > REVIEW_PREVIEW_CHAR_LIMIT;
+
+  const toggleReviewExpanded = (reviewId: string) => {
+    setExpandedReviewIds((prev) => {
+      const next = new Set(prev);
+
+      if (next.has(reviewId)) {
+        next.delete(reviewId);
+      } else {
+        next.add(reviewId);
+      }
+
+      return next;
+    });
+  };
+
   if (isLoading) return <div>Loading...</div>;
   if (isError || !movie) return <div>Failed to load movie</div>;
+
+  // if (true) throw new Error("test");
 
   console.log(movie);
 
@@ -106,12 +152,12 @@ const MovieDetailsPage = () => {
               {movie?.credits?.cast
                 .slice(0, 20)
                 .map((castMember, index, array) => (
-                  <>
-                    <a key={castMember.id} href={`/cast/${castMember.id}`}>
+                  <React.Fragment key={castMember.id}>
+                    <a href={`/cast/${castMember.id}`}>
                       {castMember.original_name}
                     </a>
                     {index !== array.length - 1 && <span>, </span>}
-                  </>
+                  </React.Fragment>
                 ))}
             </div>
           </p>
@@ -134,8 +180,7 @@ const MovieDetailsPage = () => {
         <>
           <h2>Photos & Videos</h2>
           <div className="movie-details__media">
-            <div className="movie-details__images">
-              {" "}
+            {previewImages?.length > 0 && <div className="movie-details__images">
               {/* TODO: open all images, videos buttons */}
               {previewImages?.map((image, index) => (
                 <img // TODO: clickable img with modal
@@ -145,7 +190,7 @@ const MovieDetailsPage = () => {
                   className="movie-details__image-item"
                 />
               ))}
-            </div>
+            </div>}
             {trailer && (
               <div className="movie-details__trailer">
                 <div className="movie-details__video-container">
@@ -190,6 +235,91 @@ const MovieDetailsPage = () => {
           </div>
         </div>
       </div>
+
+      {reviews.length > 0 && (
+        <>
+          <h2>Reviews</h2>
+          <div className="movie-details__reviews">
+            {visibleReviews.map((review) => {
+              const isExpanded = expandedReviewIds.has(review.id);
+              const showToggle = isReviewLong(review.content);
+
+              return (
+                <article
+                  className={cn("movie-details__review", {
+                    isClamped: showToggle && !isExpanded,
+                    isExpanded: isExpanded,
+                  })}
+                  key={review.id}
+                >
+                  <p className="movie-details__review-author">
+                    {review.author || review.author_details.username}
+                  </p>
+                  <p
+                    className={cn("movie-details__review-content", {
+                      isExpanded,
+                      isClamped: showToggle && !isExpanded,
+                    })}
+                  >
+                    {review.content}
+                  </p>
+                  {showToggle && (
+                    <button
+                      type="button"
+                      className="movie-details__review-toggle"
+                      onClick={() => toggleReviewExpanded(review.id)}
+                    >
+                      {isExpanded ? "See less" : "See more"}
+                    </button>
+                  )}
+                </article>
+              );
+            })}
+
+            {hasMoreReviews && !showAllReviews && (
+              <button
+                type="button"
+                className="movie-details__reviews-show-all"
+                onClick={() => setShowAllReviews(true)}
+              >
+                Show all reviews ({reviews.length})
+              </button>
+            )}
+          </div>
+        </>
+      )}
+
+      {recommendations.length > 0 && (
+        <>
+          <h2>Recommended Movies</h2>
+          <div className="movie-details__recommendations-carousel embla">
+            <div className="embla__viewport" ref={recommendationsRef}>
+              <div className="embla__container">
+                {recommendations.map((recommendedMovie) => (
+                  <div className="embla__slide" key={recommendedMovie.id}>
+                    <Link
+                      to={`/movie/${recommendedMovie.id}`}
+                      className="movie-details__recommendation-card"
+                    >
+                      <img
+                        className="movie-details__recommendation-poster w-[240px]"
+                        src={
+                          recommendedMovie.poster_path
+                            ? getImageUrl(recommendedMovie.poster_path, "w342")
+                            : "https://upload.wikimedia.org/wikipedia/commons/2/2f/No-photo-m.png"
+                        }
+                        alt={`${recommendedMovie.title} poster`}
+                      />
+                      <p>{recommendedMovie.title}</p>
+                      <p>{recommendedMovie.vote_average.toFixed(1)}</p>
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </section>
   );
 };

@@ -21,7 +21,7 @@ export const tmdbApi = createApi({
     }),
     getMovieWithDetails: builder.query<MovieDetails,{ id: string; params?: Record<string, any> }> ({
       query: ({ id, params = {} }) => {
-        const defaultAppend = ["credits", "videos", "images"];
+        const defaultAppend = ["credits", "videos", "images", "reviews", "recommendations"];
 
         const extraAppend = params.append_to_response
           ? params.append_to_response.split(",")

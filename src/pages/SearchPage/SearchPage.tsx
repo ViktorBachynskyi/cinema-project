@@ -139,6 +139,19 @@ const SearchPage = () => {
     setSearchParams(trimmedQuery ? { q: trimmedQuery } : {});
   };
 
+  const clearFilters = () => {
+    setFilters({
+      page: 1,
+      query: undefined,
+    });
+    setAppliedFilters({
+      page: 1,
+      query: undefined,
+    });
+
+    setSearchParams({});
+  };
+
   useEffect(() => {
     setFilters((prev) => ({
       ...prev,
@@ -270,10 +283,16 @@ const SearchPage = () => {
           </div>
           <Divider className="my-6!" />
           <button
-            className="search-page__filters-apply-btn"
+            className="search-page__filters-apply-btn mb-4"
             onClick={applyFilters}
           >
             Apply Filters
+          </button>
+          <button
+            className="search-page__filters-clear-btn"
+            onClick={clearFilters}
+          >
+            Clear Filters
           </button>
         </div>
         <div className="search-page__movies-list">

@@ -89,6 +89,21 @@ export interface Image {
   width: number;
 }
 
+export interface Review {
+  author: string;
+  author_details: {
+      name: string;
+      username: string;
+      avatar_path: string;
+      rating: number;
+  },
+  content: string;
+  created_at: string;
+  id: string;
+  updated_at: string;
+  url: string;
+};
+
 export interface MovieDetails {
   adult: boolean;
   backdrop_path: string | null;
@@ -117,6 +132,10 @@ export interface MovieDetails {
   production_countries: ProductionCountry[];
   release_date: string;
   revenue: number;
+  reviews?: {
+    results: Review[];
+  }
+  recommendations?: MoviesResponse;
   runtime: number;
   spoken_languages: SpokenLanguage[];
   status: string;
