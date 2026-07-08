@@ -1,48 +1,108 @@
-import { useGetMoviesQuery } from "@/api/tmdbApi";
+import { useGetGenresQuery, useGetTopRatedMoviesQuery, useGetTrendingMoviesQuery } from "@/api/tmdbApi";
 import { getImageUrl } from "@/api/tmdbConfig";
-import type { RootState } from "@/store";
-import { useSelector } from "react-redux";
+import MovieCard from "@/components/MovieCard/MovieCard";
+import useEmblaCarousel from "embla-carousel-react";
 import { Link } from "react-router-dom";
 
 const HomePage = () => {
-  const { data, isLoading, isError } = useGetMoviesQuery({
-    page: 1,
-    sort_by: "popularity.desc",
+  const { data: trendingMoviesWeek, isLoading: isTrendingMoviesWeekLoading, isError: isTrendingMoviesWeekError } = useGetTrendingMoviesQuery("week");
+  const { data: trendingMoviesDay, isLoading: isTrendingMoviesDayLoading, isError: isTrendingMoviesDayError } = useGetTrendingMoviesQuery("day");
+  const { data: topRatedMovies, isLoading: isTopRatedMoviesLoading, isError: isTopRatedMoviesError } = useGetTopRatedMoviesQuery();
+  const { data: genres, isLoading: isGenresLoading, isError: isGenresError } = useGetGenresQuery();
+
+  const trendingMovieToday = trendingMoviesDay?.results[0];
+
+  const [emblaRef] = useEmblaCarousel({
+    loop: false,
+    dragFree: true,
+    containScroll: "trimSnaps",
   });
-  const user = useSelector((state: RootState) => state.auth.user);
 
-  if (isLoading) return <div>Loading...</div>;
-  if (isError || !data) return <div>Failed to load movies</div>;
+  if (isTrendingMoviesWeekLoading || isTopRatedMoviesLoading) return <div>Loading...</div>;
+  if (isTrendingMoviesWeekError || isTopRatedMoviesError) return <div>Failed to load movies</div>;
 
-  console.log(user);
+  console.log(trendingMovieToday);
 
   return (
     <div className="home">
-      <h2 className="mb-4 text-2xl font-bold">Popular movies</h2>
+      {trendingMovieToday && (
+        <section className="home__trending-movie-today">
+          <h2>Top Trending Today</h2>
+          <div className="home__trending-movie-card">
+            <a href={`/movie/${trendingMovieToday?.id}`} className="home__trending-movie-card__poster-container">
+              <img
+                className="home__trending-movie-card__poster"
+                src={getImageUrl(trendingMovieToday?.poster_path ?? trendingMovieToday?.backdrop_path ?? null, "w780")}
+                alt={trendingMovieToday?.title}
+              />
+            </a>
+            <div className="home__trending-movie-card__info">
+              <a href={`/movie/${trendingMovieToday?.id}`}>
+                <h3 className="home__trending-movie-card__title">
+                  {trendingMovieToday?.title} ({trendingMovieToday.release_date?.split("-")[0]})
+                </h3>
+              </a>
+              {trendingMovieToday?.genre_ids && (
+                <div className="home__trending-movie-card__genres">
+                  {trendingMovieToday?.genre_ids.map((genreId) => (
+                    <span key={genreId} className="home__trending-movie-card__genre">
+                      {genres?.genres.find((genre) => genre.id === genreId)?.name}
+                    </span>
+                  ))}
+                </div>
+              )}
+              <p className="home__trending-movie-card__overview">{trendingMovieToday?.overview}</p>
+              <p className="home__trending-movie-card__vote-average">{trendingMovieToday?.vote_average.toFixed(1)}/10</p>
+            </div>
+          </div>
+        </section>
+      )}
 
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-5">
-        {data.results.slice(0, 15).map((movie) => (
-          <Link
-            key={movie.id}
-            to={`/movie/${movie.id}`}
-            className="rounded-2xl border border-border-default bg-bg-surface p-4 hover:bg-bg-surface-hover hover:border-border-hover"
-          >
-            <img
-              className="w-full object-cover"
-              src={getImageUrl(movie.poster_path, "w500")}
-              alt="alt"
-            />
-            <div className="text-sm font-medium mt-1">
-              {movie.title}
+      {trendingMoviesWeek && trendingMoviesWeek?.results.length > 0 && (
+        <section>
+          <h2>Trending this week</h2>
+          <div className="home__trending-movies-week__grid">
+            {trendingMoviesWeek.results.slice(0, 18).map((movie) => (
+              <MovieCard
+                key={movie.id}
+                id={movie.id}
+                title={movie.title}
+                posterPath={movie.poster_path}
+                subtitle={`${movie.vote_average.toFixed(1)}/10`}
+              />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {topRatedMovies && topRatedMovies?.results.length > 0 && (
+        <section className="home__top-rated-movies">
+          <div className="home__top-rated-movies__title-container">
+            <h2>Top Rated Movies</h2>
+            <Link to="/top-rated-movies">View All</Link>
+          </div>
+          <div className="embla">
+            <div className="embla__viewport" ref={emblaRef}>
+              <div className="embla__container">
+                {topRatedMovies.results.map((movie, index) => (
+                  <div className="embla__slide" key={movie.id}>
+                    <MovieCard
+                      id={movie.id}
+                      title={movie.title}
+                      subtitle={`${movie.vote_average.toFixed(1)}/10`}
+                      posterPath={movie.poster_path}
+                      imageSize="w500"
+                      fetchPriority="high"
+                      noActionButtons={true}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="mt-1 text-xs">
-              {movie.vote_average.toFixed(1)}
-            </div>
-          </Link>
-        ))}
-      </div>
+          </div>
+        </section>
+      )}
     </div>
   );
 };
-
 export default HomePage;

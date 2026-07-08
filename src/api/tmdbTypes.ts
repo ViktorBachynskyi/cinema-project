@@ -19,6 +19,15 @@ export interface MoviesResponse {
   total_results: number;
 }
 
+export interface CollectionDetails {
+  id: number;
+  name: string;
+  poster_path: string | null;
+  backdrop_path: string | null;
+  overview: string;
+  parts: Movie[];
+}
+
 export interface Genre {
   id: number;
   name: string;

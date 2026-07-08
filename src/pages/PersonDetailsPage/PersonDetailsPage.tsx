@@ -1,5 +1,6 @@
 import PersonPhotosModal from "@/components/PersonPhotosModal/PersonPhotosModal";
-import { Link, useParams } from "react-router-dom";
+import MovieCard from "@/components/MovieCard/MovieCard";
+import { useParams } from "react-router-dom";
 import { useGetPersonWithDetailsQuery } from "@/api/tmdbApi";
 import { getImageUrl } from "@/api/tmdbConfig";
 import type { Image } from "@/api/tmdbTypes";
@@ -200,27 +201,16 @@ const PersonDetailsPage = () => {
       <Divider />
 
       <h2>Credits</h2>
-      <div className="personal-details__credits">
+      <div className="movie-card-grid movie-card-grid--dense">
         {visibleMovies.map((movie) => (
-          <div className="personal-details__movie" key={movie.id}>
-            <Link to={`/movie/${movie.id}`} className="">
-              <img
-                className=""
-                src={
-                  getImageUrl(
-                    movie.poster_path || movie.backdrop_path,
-                    "w500",
-                  ) ||
-                  "https://s3-eu-west-1.amazonaws.com/entertainmentie/uploads/2021/08/27144852/generic-movie-poster.jpg"
-                }
-                alt={`${movie.title}`}
-              />
-              <p className="personal-details__movie-title">{movie.title}</p>
-              <p className="personal-details__movie-character">
-                {movie.character}
-              </p>
-            </Link>
-          </div>
+          <MovieCard
+            key={movie.id}
+            id={movie.id}
+            title={movie.title}
+            posterPath={movie.poster_path}
+            backdropPath={movie.backdrop_path}
+            subtitle={movie.character}
+          />
         ))}
       </div>
       <div ref={observerRef} style={{ height: 1 }} />

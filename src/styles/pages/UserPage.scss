@@ -1,0 +1,46 @@
+.user-page {
+}
+
+.user-page__profile {
+  @apply flex flex-col gap-4 rounded-2xl border border-border-default bg-bg-surface p-6;
+}
+
+.user-page__profile-item {
+  @apply text-text-primary;
+
+  span:first-child {
+    @apply text-text-secondary;
+  }
+}
+
+.user-page__genres {
+  @apply mt-8 mb-20;
+}
+
+.user-page__genres-title {
+  @apply mb-2 text-xl font-medium text-white;
+}
+
+.user-page__genres-description {
+  @apply mb-6 text-text-secondary;
+}
+
+.user-page__genres-list {
+  @apply grid gap-3 sm:grid-cols-2 lg:grid-cols-4;
+}
+
+.user-page__genre-option {
+  @apply flex items-center gap-2 bg-bg-surface cursor-pointer rounded-xl px-4 py-3 transition-colors hover:bg-bg-surface-hover;
+
+  &.isSelected {
+    @apply bg-bg-app;
+  }
+
+  input {
+    @apply hidden h-0 w-0;
+  }
+}
+
+.user-page__genres-save-btn {
+  @apply mt-6 h-12 cursor-pointer rounded-2xl border border-border-default px-10 text-text-primary transition-colors hover:border-border-hover hover:text-white disabled:cursor-default disabled:opacity-50;
+}

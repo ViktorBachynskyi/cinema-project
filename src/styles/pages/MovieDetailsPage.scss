@@ -5,30 +5,11 @@
   @apply flex gap-10 mb-20;
 }
 
-.movie-details__poster {
-  @apply rounded-sm;
-}
-
 .movie-details__info {
   @apply w-full pt-2;
 
   p {
     @apply text-text-primary;
-  }
-}
-
-.movie-details__favorite-button {
-  @apply absolute top-4 right-4 cursor-pointer;
-
-  .material-symbols-sharp {
-    @apply text-4xl;
-  }
-
-  &:hover .material-symbols-sharp,
-  &.isFavorite .material-symbols-sharp {
-    @apply text-button-primary-hover;
-
-    font-variation-settings: 'FILL' 1;
   }
 }
 
@@ -96,7 +77,7 @@
   }
 
   p {
-    @apply text-text-secondary;
+    @apply text-text-secondary line-clamp-2;
   }
 }
 
@@ -118,6 +99,14 @@
 
 .movie-details__recommendation-poster {
   @apply h-[336px] rounded-2xl object-cover mb-2;
+}
+
+.movie-details__collection-movies {
+  @apply mb-20;
+}
+
+.movie-details__collection-movies .movie-card__title {
+  @apply text-base;
 }
 
 .movie-details__reviews {

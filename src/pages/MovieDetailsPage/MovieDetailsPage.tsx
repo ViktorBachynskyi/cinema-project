@@ -1,8 +1,8 @@
-import { useGetMovieWithDetailsQuery } from "@/api/tmdbApi";
+import { useGetCollectionDetailsQuery, useGetMovieWithDetailsQuery } from "@/api/tmdbApi";
 import type { Review } from "@/api/tmdbTypes";
 import { getImageUrl } from "@/api/tmdbConfig";
 import { Divider } from "@/components/Divider";
-import { useFavorites } from "@/hooks/useFavorites";
+import MovieCard from "@/components/MovieCard/MovieCard";
 import useEmblaCarousel from "embla-carousel-react";
 import cn from "classnames";
 import { useEffect, useState } from "react";
@@ -36,7 +36,7 @@ const MovieDetailsPage = () => {
   } = useGetMovieWithDetailsQuery({
     id: id!,
   });
-  const { isFavorite, toggleFavorite, isAuthenticated } = useFavorites();
+  const { data: collectionDetails } = useGetCollectionDetailsQuery(movie?.belongs_to_collection?.id ?? 0);
   const director = movie?.credits?.crew.find(
     (crewMember) => crewMember.job === "Director",
   );
@@ -92,34 +92,14 @@ const MovieDetailsPage = () => {
       <h1>{movie.title}</h1>
 
       <div className="movie-details__main-info">
-        <div className="movie-details__poster-container relative">
-          <img
-            className="movie-details__poster w-[342px]"
-            src={getImageUrl(movie.poster_path, "w342")}
-            alt={movie.title}
-            fetchPriority="high"
-          />
-          {isAuthenticated && (
-            <button
-              type="button"
-              className={cn("movie-details__favorite-button", {
-                isFavorite: isFavorite(movie.id),
-              })}
-              aria-label={
-                isFavorite(movie.id)
-                  ? "Remove from favorites"
-                  : "Add to favorites"
-              }
-              onClick={() =>
-                toggleFavorite(movie.id)
-              }
-            >
-              <span className="material-symbols-sharp material-symbols">
-                favorite
-              </span>
-            </button>
-          )}
-        </div>
+        <MovieCard
+          id={movie.id}
+          title={movie.title}
+          posterPath={movie.poster_path}
+          imageSize="w500"
+          variant="poster"
+          fetchPriority="high"
+        />
 
         <div className="movie-details__info">
           <p>{movie.overview}</p>
@@ -235,6 +215,25 @@ const MovieDetailsPage = () => {
           </div>
         </div>
       </div>
+
+      {collectionDetails && collectionDetails.parts.length > 0 && (
+        <>
+          <h2>Collection</h2>
+          <div className="movie-details__collection-movies movie-card-grid">
+            {collectionDetails.parts.map((part) => (
+              <MovieCard
+                key={part.id}
+                id={part.id}
+                title={part.title}
+                posterPath={part.poster_path}
+                imageSize="w500"
+                fetchPriority="high"
+                noActionButtons={true}
+              />
+            ))}
+          </div>
+        </>
+      )}
 
       {reviews.length > 0 && (
         <>

@@ -10,6 +10,8 @@ type UserProfile = {
   displayName?: string | null;
   age?: number | null;
   favorites?: number[];
+  favoriteGenres?: number[];
+  watchList?: number[];
 };
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
@@ -34,6 +36,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           displayName: userData.displayName ?? user.displayName ?? null,
           age: userData.age ?? null,
           favorites: userData.favorites ?? [],
+          favoriteGenres: userData.favoriteGenres ?? [],
+          watchList: userData.watchList ?? [],
         };
 
         dispatch(setUser(serializedUser));

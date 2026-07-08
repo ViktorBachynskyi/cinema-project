@@ -4,23 +4,3 @@
 .favorites-page__empty {
   @apply text-text-secondary;
 }
-
-.favorites-page__grid {
-  @apply grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-5;
-}
-
-.favorites-page__card {
-  @apply rounded-2xl border border-border-default bg-bg-surface p-4 hover:bg-bg-surface-hover hover:border-border-hover;
-
-  img {
-    @apply w-full object-cover;
-  }
-}
-
-.favorites-page__card-title {
-  @apply text-sm font-medium mt-1;
-}
-
-.favorites-page__card-rating {
-  @apply mt-1 text-xs;
-}

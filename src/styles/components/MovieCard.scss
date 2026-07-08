@@ -1,0 +1,71 @@
+.movie-card {
+  @apply block;
+
+  &:not(.movie-card--poster):hover .movie-card__poster-container {
+    @apply -translate-y-1;
+  }
+}
+
+.movie-card--poster {
+  .movie-card__poster {
+    @apply border-none;
+  }
+}
+
+.movie-card__poster-container {
+  @apply relative transform transition-transform duration-500 ease-in-out;
+}
+
+.movie-card__poster {
+  @apply w-full rounded-2xl border border-border-default object-cover aspect-[2/3];
+}
+
+.movie-card__buttons {
+  @apply absolute top-3 right-3 flex flex-col items-center justify-center gap-2;
+}
+
+.movie-card__add-to-favorites {
+  .material-symbols {
+    @apply text-3xl text-button-primary cursor-pointer;
+  }
+
+  &:hover .material-symbols,
+  &.isActive .material-symbols {
+    @apply text-button-primary-hover;
+
+    font-variation-settings: 'FILL' 1;
+  }
+}
+
+.movie-card__add-to-watchlist {
+  .material-symbols {
+    @apply text-4xl text-gold cursor-pointer;
+  }
+}
+
+.movie-card__buttons button {
+
+  &:hover .material-symbols {
+    @apply scale-120 transition-transform duration-300 ease-in-out;
+  }
+}
+
+.movie-card__info {
+  @apply block px-1;
+}
+
+.movie-card__title {
+  @apply mt-2 text-xl font-medium text-white;
+}
+
+.movie-card__subtitle {
+  @apply text-text-secondary;
+}
+
+.movie-card-grid {
+  @apply grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-5;
+}
+
+.movie-card-grid--dense {
+  @apply grid grid-cols-5 gap-x-6 gap-y-10;
+}

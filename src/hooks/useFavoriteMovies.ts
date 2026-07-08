@@ -32,7 +32,9 @@ export const useFavoriteMovies = () => {
       ? []
       : isCacheValid
         ? cachedMovies ?? []
-        : data ?? [];
+        : cachedMovies?.length
+          ? cachedMovies
+          : data ?? [];
 
   return {
     favoriteMovies,

@@ -1,0 +1,54 @@
+.home {
+    section {
+        @apply mb-20;
+    }
+}
+
+.home__trending-movies-week__grid {
+    @apply grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6;
+}
+
+.home__top-rated-movies__title-container {
+    @apply flex justify-between;
+}
+
+.home__top-rated-movies__title-container a {
+    @apply text-lg;
+}
+
+.home .movie-card__title {
+    @apply text-base;
+}
+
+.home .embla .movie-card:hover .movie-card__poster-container {
+    @apply !translate-y-0;
+}
+
+.home__trending-movie-card {
+    @apply flex gap-10;
+}
+
+.home__trending-movie-card__poster-container {
+    @apply block w-[300px] shrink-0;
+}
+
+.home__trending-movie-card__poster {
+    @apply rounded-2xl border border-border-default object-cover;
+}
+
+
+.home__trending-movie-card__title {
+    @apply text-2xl font-bold;
+}
+
+.home__trending-movie-card__genres {
+    @apply flex gap-2 mb-4;
+}
+
+.home__trending-movie-card__genre {
+    @apply bg-bg-surface rounded-full px-2 py-1 text-base;
+}
+
+.home__trending-movie-card__overview {
+    @apply text-lg text-text-secondary mb-4;
+}

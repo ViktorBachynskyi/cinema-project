@@ -73,10 +73,8 @@ module.exports = {
 
 ### Output
 
-```text
 home.bundle.js
 admin.bundle.js
-```
 
 ### Pros
 
@@ -108,10 +106,8 @@ Webpack creates a separate chunk automatically.
 
 ### Generated Bundles
 
-```text
 main.bundle.js
 calculator.chunk.js
-```
 
 The calculator code is downloaded only after the button is clicked.
 
@@ -167,10 +163,8 @@ module.exports = {
 
 Suppose two pages use React:
 
-```text
 home.js
 admin.js
-```
 
 Both import:
 
@@ -180,11 +174,9 @@ import React from 'react';
 
 Webpack can create:
 
-```text
 home.bundle.js
 admin.bundle.js
 vendors.bundle.js
-```
 
 React is downloaded once and reused.
 
@@ -240,10 +232,8 @@ optimization: {
 
 ### Result
 
-```text
 main.bundle.js
 vendors.bundle.js
-```
 
 Benefits:
 
@@ -265,15 +255,11 @@ import(
 
 Generated file:
 
-```text
 analytics.chunk.js
-```
 
 Instead of:
 
-```text
 123.chunk.js
-```
 
 This helps debugging and bundle analysis.
 
@@ -294,15 +280,11 @@ import(
 
 User is on:
 
-```text
 Home Page
-```
 
 You know they might visit:
 
-```text
 Settings Page
-```
 
 Browser downloads the chunk when idle.
 

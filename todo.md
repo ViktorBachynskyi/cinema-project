@@ -4,13 +4,13 @@
 - think about what I can add (new functionality):
 - MovieDetailsPage - add users reviews +
 - add recommendations(user would also like) +
-- add collections (show all parts like harry potter 1, 2, 3...)
-- Add watchlist
-- HomePage - update popular movies to trending movies by day/week, add top 250
+- add collections (show all parts like harry potter 1, 2, 3...) +
+- Add watchlist +
+- HomePage - update popular movies to trending movies by day/week, add top 250 +
 - use Use hook + suspense (for favorites)
 - use useTransition with favorite toggle on movieDetailsPage (or find other places where to use)
 - try to use useSyncExternalStore (if not needed find way to argument using it)
-- check if errorboundary works (should be error in runtime)
+- check if errorboundary works (should be error in runtime) +
 
 ### docs
 - loading optimizations (e.g., preload, preinit, prefetch) deep understanding (підготувати мд файл) +

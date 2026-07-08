@@ -92,6 +92,8 @@ const AuthForm: FC<AuthFormProps> = ({ mode }) => {
           displayName: data.displayName,
           age: data.age ?? null,
           favorites: [],
+          favoriteGenres: [],
+          watchList: [],
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
         });
@@ -123,6 +125,8 @@ const AuthForm: FC<AuthFormProps> = ({ mode }) => {
           displayName: userCredential.user.displayName,
           age: null,
           favorites: [],
+          favoriteGenres: [],
+          watchList: [],
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
         });

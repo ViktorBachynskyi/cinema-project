@@ -9,6 +9,8 @@ interface User {
   age?: number | null;
   favorites?: number[];
   favoriteMovies?: Movie[] | null;
+  favoriteGenres?: number[];
+  watchList?: number[];
 }
 
 interface AuthState {
@@ -39,8 +41,24 @@ const authSlice = createSlice({
         state.user.favoriteMovies = action.payload;
       }
     },
+    setFavoriteGenres(state, action: PayloadAction<number[]>) {
+      if (state.user) {
+        state.user.favoriteGenres = action.payload;
+      }
+    },
+    setWatchList(state, action: PayloadAction<number[]>) {
+      if (state.user) {
+        state.user.watchList = action.payload;
+      }
+    },
   },
 });
 
-export const { setUser, setFavorites, setFavoriteMovies } = authSlice.actions;
+export const {
+  setUser,
+  setFavorites,
+  setFavoriteMovies,
+  setFavoriteGenres,
+  setWatchList,
+} = authSlice.actions;
 export default authSlice.reducer;

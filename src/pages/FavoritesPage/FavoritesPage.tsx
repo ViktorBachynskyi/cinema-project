@@ -1,39 +1,59 @@
-import { getImageUrl } from "@/api/tmdbConfig";
+import type { Movie } from "@/api/tmdbTypes";
+import MovieCard from "@/components/MovieCard/MovieCard";
 import { useFavoriteMovies } from "@/hooks/useFavoriteMovies";
-import { Link } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
 
 const FavoritesPage = () => {
   const { favoriteMovies, isLoading } = useFavoriteMovies();
+  const [displayMovies, setDisplayMovies] = useState<Movie[]>([]);
+  const isInitialized = useRef(false);
+
+  useEffect(() => {
+    if (isLoading) return;
+
+    setDisplayMovies((prev) => {
+      if (!isInitialized.current) {
+        isInitialized.current = true;
+        return favoriteMovies;
+      }
+
+      const displayedIds = new Set(prev.map((movie) => movie.id));
+      const newMovies = favoriteMovies.filter(
+        (movie) => !displayedIds.has(movie.id),
+      );
+
+      if (newMovies.length === 0) {
+        return prev;
+      }
+
+      return [...prev, ...newMovies];
+    });
+  }, [favoriteMovies, isLoading]);
+
+  const showInitialLoading = isLoading && !isInitialized.current;
 
   return (
     <div className="favorites-page">
       <h1>Favorite movies</h1>
 
-      {isLoading && <p>Loading favorites...</p>}
+      {showInitialLoading && <p>Loading favorites...</p>}
 
-      {!isLoading && !favoriteMovies.length && (
+      {!showInitialLoading && displayMovies.length === 0 && (
         <p className="favorites-page__empty">
           You have not added any favorites yet.
         </p>
       )}
 
-      {!isLoading && favoriteMovies.length > 0 && (
-        <div className="favorites-page__grid">
-          {favoriteMovies.map((movie) => (
-            <Link
+      {displayMovies.length > 0 && (
+        <div className="movie-card-grid">
+          {displayMovies.map((movie) => (
+            <MovieCard
               key={movie.id}
-              to={`/movie/${movie.id}`}
-              className="favorites-page__card"
-            >
-              <img
-                src={getImageUrl(movie.poster_path, "w500")}
-                alt={movie.title}
-              />
-              <div className="favorites-page__card-title">{movie.title}</div>
-              <div className="favorites-page__card-rating">
-                {movie.vote_average.toFixed(1)}
-              </div>
-            </Link>
+              id={movie.id}
+              title={movie.title}
+              posterPath={movie.poster_path}
+              subtitle={`${movie.vote_average.toFixed(1)}/10`}
+            />
           ))}
         </div>
       )}

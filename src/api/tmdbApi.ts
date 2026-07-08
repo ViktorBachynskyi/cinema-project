@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { TMDB_BASE_URL, TMDB_API_KEY } from "./tmdbConfig";
-import type { GenresResponse, Movie, MovieDetails, MoviesResponse } from "./tmdbTypes";
+import type { CollectionDetails, GenresResponse, Movie, MovieDetails, MoviesResponse } from "./tmdbTypes";
 import type { Person } from "@/pages/PersonDetailsPage/PersonDetailsPage";
 
 export const tmdbApi = createApi({
@@ -108,6 +108,24 @@ export const tmdbApi = createApi({
         return { data: movies };
       },
     }),
+    getCollectionDetails: builder.query<CollectionDetails, number> ({
+      query: (id: number ) => ({
+        url: `/collection/${id}`,
+        params: { api_key: TMDB_API_KEY },
+      }),
+    }),
+    getTopRatedMovies: builder.query<MoviesResponse, void>({
+      query: () => ({
+        url: `/movie/top_rated`,
+        params: { api_key: TMDB_API_KEY },
+      }),
+    }),
+    getTrendingMovies: builder.query<MoviesResponse, "day" | "week">({
+      query: (time_window: "day" | "week") => ({
+        url: `/trending/movie/${time_window}`,
+        params: { api_key: TMDB_API_KEY },
+      }),
+    }),
   }),
 });
 
@@ -119,4 +137,7 @@ export const {
   useGetGenresQuery,
   useGetCountriesQuery,
   useGetMoviesByIdsQuery,
+  useGetCollectionDetailsQuery,
+  useGetTopRatedMoviesQuery,
+  useGetTrendingMoviesQuery,
 } = tmdbApi;

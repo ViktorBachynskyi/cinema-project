@@ -1,0 +1,39 @@
+.top-rated-movies__list {
+    @apply flex flex-col gap-8;
+}
+
+.top-rated-movies__movie {
+    @apply flex gap-8;
+
+    img {
+        @apply max-w-[200px] rounded-2xl border border-border-default transform transition-transform duration-500 ease-in-out;
+    }
+
+    img:hover {
+        @apply -translate-y-1;
+    }
+}
+
+.top-rated-movies__movie-info {
+    @apply flex flex-col items-start gap-2 text-text-secondary pt-4;
+
+    svg {
+        @apply absolute top-0 left-0;
+    }
+}
+
+.top-rated-movies__movie-title-container {
+    @apply flex items-center gap-4;
+}
+
+.top-rated-movies__movie-number {
+    @apply text-2xl font-bold text-white;
+}
+
+.top-rated-movies__movie-title {
+    @apply text-2xl font-medium text-white hover:text-text-primary;
+}
+
+.top-rated-movies__rating {
+    @apply relative flex items-end gap-1 pl-6;
+}

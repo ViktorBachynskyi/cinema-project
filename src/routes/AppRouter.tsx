@@ -3,7 +3,6 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { lazy, Suspense } from "react";
 
-
 const HomePage = lazy(() => import("@/pages/HomePage/HomePage"));
 const SearchPage = lazy(() => import("@/pages/SearchPage/SearchPage"));
 const SignIn = lazy(() => import("@/pages/SignIn/SignIn"));
@@ -16,6 +15,7 @@ const MovieDetailsPage = lazy(
 const PersonDetailsPage = lazy(
   () => import("@/pages/PersonDetailsPage/PersonDetailsPage"),
 );
+const TopRatedMoviesPage = lazy(() => import("@/pages/TopRatedMovies/TopRatedMovies"));
 
 const router = createBrowserRouter([
   {
@@ -65,6 +65,10 @@ const router = createBrowserRouter([
             <FavoritesPage />
           </ProtectedRoute>
         ),
+      },
+      {
+        path: "top-rated-movies",
+        element: <TopRatedMoviesPage />,
       },
     ],
   },
