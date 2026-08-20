@@ -3,6 +3,16 @@ import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { TMDB_BASE_URL, TMDB_API_KEY } from "./tmdbConfig";
 import type { CollectionDetails, GenresResponse, Movie, MovieDetails, MoviesResponse } from "./tmdbTypes";
 import type { Person } from "@/pages/PersonDetailsPage/PersonDetailsPage";
+import {
+  MAX_SOURCE_FAVORITES,
+  pickPersonalizedRecommendations,
+} from "@/utils/personalizedRecommendations";
+
+export interface PersonalizedRecommendationsArgs {
+  movieIds: number[];
+  favoriteGenres: number[];
+  excludeIds?: number[];
+}
 
 export const tmdbApi = createApi({
   reducerPath: "tmdbApi",
@@ -114,10 +124,13 @@ export const tmdbApi = createApi({
         params: { api_key: TMDB_API_KEY },
       }),
     }),
-    getTopRatedMovies: builder.query<MoviesResponse, void>({
-      query: () => ({
+    getTopRatedMovies: builder.query<MoviesResponse, number | void>({
+      query: (page = 1) => ({
         url: `/movie/top_rated`,
-        params: { api_key: TMDB_API_KEY },
+        params: {
+          api_key: TMDB_API_KEY,
+          page,
+        },
       }),
     }),
     getTrendingMovies: builder.query<MoviesResponse, "day" | "week">({
@@ -125,6 +138,46 @@ export const tmdbApi = createApi({
         url: `/trending/movie/${time_window}`,
         params: { api_key: TMDB_API_KEY },
       }),
+    }),
+    getRecommendationsForFavoriteMovies: builder.query<Movie[], PersonalizedRecommendationsArgs>({
+      async queryFn(
+        { movieIds, favoriteGenres, excludeIds = [] },
+        _api,
+        _extraOptions,
+        fetchWithBQ,
+      ) {
+        if (!movieIds.length) {
+          return { data: [] };
+        }
+
+        const sourceIds = movieIds.slice(0, MAX_SOURCE_FAVORITES);
+        const results = await Promise.all(
+          sourceIds.map((id) =>
+            fetchWithBQ({
+              url: `/movie/${id}/recommendations`,
+              params: { api_key: TMDB_API_KEY, page: 1 },
+            }),
+          ),
+        );
+
+        const allRecommendations: Movie[] = [];
+
+        for (const result of results) {
+          if (result.error) {
+            return { error: result.error as FetchBaseQueryError };
+          }
+
+          const response = result.data as MoviesResponse;
+          allRecommendations.push(...response.results);
+        }
+
+        return {
+          data: pickPersonalizedRecommendations(allRecommendations, {
+            favoriteGenres,
+            excludeIds: [...excludeIds, ...movieIds],
+          }),
+        };
+      },
     }),
   }),
 });
@@ -140,4 +193,5 @@ export const {
   useGetCollectionDetailsQuery,
   useGetTopRatedMoviesQuery,
   useGetTrendingMoviesQuery,
+  useGetRecommendationsForFavoriteMoviesQuery,
 } = tmdbApi;

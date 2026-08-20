@@ -1,19 +1,59 @@
 import { useGetTopRatedMoviesQuery } from "@/api/tmdbApi";
+import type { Movie } from "@/api/tmdbTypes";
 import { getImageUrl } from "@/api/tmdbConfig";
-import MovieCard from "@/components/MovieCard/MovieCard";
 import { rating_star_svg } from "../SearchPage/constant";
+import { useEffect, useState } from "react";
+
+const MAX_MOVIES = 200;
 
 const TopRatedMoviesPage = () => {
-    const { data, isLoading: isTopRatedMoviesLoading, isError: isTopRatedMoviesError } = useGetTopRatedMoviesQuery();
+    const [page, setPage] = useState(1);
+    const [movies, setMovies] = useState<Movie[]>([]);
+    const {
+        data,
+        isLoading,
+        isFetching,
+        isError,
+    } = useGetTopRatedMoviesQuery(page);
 
-    if (isTopRatedMoviesLoading) return <div>Loading...</div>;
-    if (isTopRatedMoviesError || !data) return <div>Failed to load movies</div>;
+    const isInitialLoading = isLoading && movies.length === 0;
+    const isLoadingMore = isFetching && page > 1;
+    const canLoadMore =
+        movies.length < MAX_MOVIES &&
+        page < (data?.total_pages ?? 1) &&
+        movies.length < (data?.total_results ?? 0);
+
+    const handleLoadMore = () => {
+        if (!canLoadMore || isLoadingMore) {
+            return;
+        }
+
+        setPage((currentPage) => currentPage + 1);
+    };
+
+    useEffect(() => {
+    if (!data?.results) {
+        return;
+    }
+
+    setMovies((prev) => {
+        const existingIds = new Set(prev.map((movie) => movie.id));
+        const nextMovies = data.results.filter(
+            (movie) => !existingIds.has(movie.id),
+        );
+
+        return [...prev, ...nextMovies].slice(0, MAX_MOVIES);
+    });
+    }, [data, page]);
+
+    if (isInitialLoading) return <div>Loading...</div>;
+    if (isError || !data) return <div>Failed to load movies</div>;
 
     return (
         <div className="top-rated-movies">
             <h1>Top Rated Movies</h1>
             <div className="top-rated-movies__list">
-                {data?.results?.map((movie, index) => (
+                {movies.map((movie, index) => (
                     <div key={movie.id} className="top-rated-movies__movie">
                         <a href={`/movie/${movie.id}`}>
                             <img
@@ -22,8 +62,13 @@ const TopRatedMoviesPage = () => {
                             />
                         </a>
                         <div className="top-rated-movies__movie-info">
-                            <a className="top-rated-movies__movie-title-container" href={`/movie/${movie.id}`}>
-                                <span className="top-rated-movies__movie-number">{index + 1}.</span>
+                            <a
+                                className="top-rated-movies__movie-title-container"
+                                href={`/movie/${movie.id}`}
+                            >
+                                <span className="top-rated-movies__movie-number">
+                                    {index + 1}.
+                                </span>
                                 <p className="top-rated-movies__movie-title">{movie.title}</p>
                             </a>
                             <div className="flex gap-2">
@@ -39,8 +84,22 @@ const TopRatedMoviesPage = () => {
                     </div>
                 ))}
             </div>
+
+            {canLoadMore && (
+                <div className="flex justify-center">
+                    <button
+                        type="button"
+                        className="top-rated-movies__load-more"
+                        onClick={handleLoadMore}
+                        disabled={isLoadingMore}
+                    >
+                        {isLoadingMore ? "Loading..." : "Load more"}
+                    </button>
+                </div>
+
+            )}
         </div>
-    )
-}
+    );
+};
 
 export default TopRatedMoviesPage;

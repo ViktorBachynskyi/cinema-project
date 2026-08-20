@@ -1,1 +1,0 @@
-import{j as t}from"./index-C_dSzNqy.js";import{A as s}from"./AuthForm-FbTbK2Ds.js";const e=()=>t.jsxs("div",{style:{maxWidth:400,margin:"100px auto"},children:[t.jsx("h2",{className:"text-center mb-10",children:"Sign In"}),t.jsx(s,{mode:"signIn"})]});export{e as default};

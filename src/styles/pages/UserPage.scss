@@ -44,3 +44,15 @@
 .user-page__genres-save-btn {
   @apply mt-6 h-12 cursor-pointer rounded-2xl border border-border-default px-10 text-text-primary transition-colors hover:border-border-hover hover:text-white disabled:cursor-default disabled:opacity-50;
 }
+
+.user-page__watch-list {
+  @apply mb-20;
+}
+
+.user-page__watch-list-title {
+  @apply mb-6 text-xl font-medium text-white;
+}
+
+.user-page__watch-list-empty {
+  @apply text-text-secondary;
+}

@@ -1,18 +1,35 @@
 import { useGetGenresQuery, useGetTopRatedMoviesQuery, useGetTrendingMoviesQuery } from "@/api/tmdbApi";
 import { getImageUrl } from "@/api/tmdbConfig";
 import MovieCard from "@/components/MovieCard/MovieCard";
+import { useAuth } from "@/hooks/useAuth";
+import { usePersonalizedRecommendations } from "@/hooks/usePersonalizedRecommendations";
 import useEmblaCarousel from "embla-carousel-react";
 import { Link } from "react-router-dom";
 
 const HomePage = () => {
+  const { isAuthenticated } = useAuth();
+  const {
+    recommendedMovies,
+    isLoading: isRecommendedLoading,
+    hasFavorites,
+    hasFavoriteGenres,
+    canRecommend,
+  } = usePersonalizedRecommendations();
+
   const { data: trendingMoviesWeek, isLoading: isTrendingMoviesWeekLoading, isError: isTrendingMoviesWeekError } = useGetTrendingMoviesQuery("week");
   const { data: trendingMoviesDay, isLoading: isTrendingMoviesDayLoading, isError: isTrendingMoviesDayError } = useGetTrendingMoviesQuery("day");
   const { data: topRatedMovies, isLoading: isTopRatedMoviesLoading, isError: isTopRatedMoviesError } = useGetTopRatedMoviesQuery();
-  const { data: genres, isLoading: isGenresLoading, isError: isGenresError } = useGetGenresQuery();
+  const { data: genres } = useGetGenresQuery();
 
   const trendingMovieToday = trendingMoviesDay?.results[0];
 
-  const [emblaRef] = useEmblaCarousel({
+  const [topRatedEmblaRef] = useEmblaCarousel({
+    loop: false,
+    dragFree: true,
+    containScroll: "trimSnaps",
+  });
+
+  const [recommendedEmblaRef] = useEmblaCarousel({
     loop: false,
     dragFree: true,
     containScroll: "trimSnaps",
@@ -20,8 +37,6 @@ const HomePage = () => {
 
   if (isTrendingMoviesWeekLoading || isTopRatedMoviesLoading) return <div>Loading...</div>;
   if (isTrendingMoviesWeekError || isTopRatedMoviesError) return <div>Failed to load movies</div>;
-
-  console.log(trendingMovieToday);
 
   return (
     <div className="home">
@@ -82,7 +97,7 @@ const HomePage = () => {
             <Link to="/top-rated-movies">View All</Link>
           </div>
           <div className="embla">
-            <div className="embla__viewport" ref={emblaRef}>
+            <div className="embla__viewport" ref={topRatedEmblaRef}>
               <div className="embla__container">
                 {topRatedMovies.results.map((movie, index) => (
                   <div className="embla__slide" key={movie.id}>
@@ -100,6 +115,56 @@ const HomePage = () => {
               </div>
             </div>
           </div>
+        </section>
+      )}
+
+      {(canRecommend || isAuthenticated) && (
+        <section className="home__recommended-movies">
+          <h2>Movies you might like</h2>
+
+          {canRecommend && isRecommendedLoading && <p>Loading recommendations...</p>}
+
+          {canRecommend && !isRecommendedLoading && recommendedMovies.length > 0 && (
+            <div className="embla">
+              <div className="embla__viewport" ref={recommendedEmblaRef}>
+                <div className="embla__container">
+                  {recommendedMovies.map((movie) => (
+                    <div className="embla__slide" key={movie.id}>
+                      <MovieCard
+                        id={movie.id}
+                        title={movie.title}
+                        subtitle={`${movie.vote_average.toFixed(1)}/10`}
+                        posterPath={movie.poster_path}
+                        imageSize="w500"
+                        fetchPriority="high"
+                        noActionButtons={true}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {canRecommend && !isRecommendedLoading && recommendedMovies.length === 0 && (
+            <p>
+              {hasFavorites && hasFavoriteGenres
+                ? "No matching recommendations yet. Try adding more favorites or updating your favorite genres."
+                : hasFavorites
+                  ? "No recommendations found from your favorite movies yet."
+                  : "No recommendations found. Try updating your favorite genres on your profile."}
+            </p>
+          )}
+
+          {isAuthenticated && !canRecommend && (
+            <p>
+              Add favorite movies and pick your favorite genres on your{" "}
+              <Link to="/user" className="underline">
+                profile
+              </Link>{" "}
+              to get personalized recommendations.
+            </p>
+          )}
         </section>
       )}
     </div>

@@ -1,4 +1,5 @@
-import { useGetGenresQuery } from "@/api/tmdbApi";
+import { useGetGenresQuery, useGetMoviesByIdsQuery } from "@/api/tmdbApi";
+import MovieCard from "@/components/MovieCard/MovieCard";
 import { db } from "@/firebase";
 import { useAppDispatch } from "@/hooks";
 import { useAuth } from "@/hooks/useAuth";
@@ -10,9 +11,18 @@ import { useEffect, useState } from "react";
 const UserPage = () => {
   const dispatch = useAppDispatch();
   const { user } = useAuth();
+  const watchListIds = user?.watchList ?? [];
   const { data: genresData, isLoading: isGenresLoading } = useGetGenresQuery();
+  const {
+    data: watchListMovies = [],
+    isLoading: isWatchListLoading,
+    isFetching: isWatchListFetching,
+  } = useGetMoviesByIdsQuery(watchListIds, { skip: watchListIds.length === 0 });
   const [selectedGenres, setSelectedGenres] = useState<number[]>([]);
   const [isSaving, setIsSaving] = useState(false);
+
+  const isLoadingWatchList =
+    watchListIds.length > 0 && (isWatchListLoading || isWatchListFetching);
 
   if (!user) {
     return null;
@@ -92,15 +102,31 @@ const UserPage = () => {
         </button>
       </section>
 
-      {user.watchList && user.watchList.length > 0 && (
-        <section className="user-page__watch-list">
-          <h2>Watch list</h2>
-          <ul>
-            {user.watchList.map((movieId) => (
-              <li key={movieId}>{movieId}</li>
+      <section className="user-page__watch-list">
+        <h2 className="user-page__watch-list-title">Watch list</h2>
+
+        {isLoadingWatchList && <p>Loading watch list...</p>}
+
+        {!isLoadingWatchList && watchListIds.length === 0 && (
+          <p className="user-page__watch-list-empty">
+            You have not added any movies to your watch list yet.
+          </p>
+        )}
+
+        {!isLoadingWatchList && watchListMovies.length > 0 && (
+          <div className="movie-card-grid">
+            {watchListMovies.map((movie) => (
+              <MovieCard
+                key={movie.id}
+                id={movie.id}
+                title={movie.title}
+                posterPath={movie.poster_path}
+                subtitle={`${movie.vote_average.toFixed(1)}/10`}
+              />
             ))}
-          </ul>
-        </section>)}
+          </div>
+        )}
+      </section>
     </div>
   );
 };

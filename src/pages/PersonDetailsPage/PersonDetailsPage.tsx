@@ -1,12 +1,15 @@
-import PersonPhotosModal from "@/components/PersonPhotosModal/PersonPhotosModal";
 import MovieCard from "@/components/MovieCard/MovieCard";
-import { useParams } from "react-router-dom";
+import { Divider } from "@/components/Divider";
 import { useGetPersonWithDetailsQuery } from "@/api/tmdbApi";
 import { getImageUrl } from "@/api/tmdbConfig";
 import type { Image } from "@/api/tmdbTypes";
 import { formatBiography } from "@/utils/formatBiography";
-import { Divider } from "@/components/Divider";
-import { useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { useParams } from "react-router-dom";
+
+const PersonPhotosModal = lazy(
+  () => import("@/components/PersonPhotosModal/PersonPhotosModal"),
+);
 
 export interface PersonMovieCredit {
   id: number;
@@ -191,12 +194,16 @@ const PersonDetailsPage = () => {
         </>
       )}
 
-      <PersonPhotosModal
-        isOpen={isGalleryOpen}
-        photos={photos}
-        initialIndex={activePhotoIndex}
-        onClose={closeGallery}
-      />
+      {isGalleryOpen && (
+        <Suspense fallback={null}>
+          <PersonPhotosModal
+            isOpen={isGalleryOpen}
+            photos={photos}
+            initialIndex={activePhotoIndex}
+            onClose={closeGallery}
+          />
+        </Suspense>
+      )}
 
       <Divider />
 
