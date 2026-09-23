@@ -32,18 +32,18 @@ const TopRatedMoviesPage = () => {
     };
 
     useEffect(() => {
-    if (!data?.results) {
-        return;
-    }
+        if (!data?.results) {
+            return;
+        }
 
-    setMovies((prev) => {
-        const existingIds = new Set(prev.map((movie) => movie.id));
-        const nextMovies = data.results.filter(
-            (movie) => !existingIds.has(movie.id),
-        );
+        setMovies((prev) => {
+            const existingIds = new Set(prev.map((movie) => movie.id));
+            const nextMovies = data.results.filter(
+                (movie) => !existingIds.has(movie.id),
+            );
 
-        return [...prev, ...nextMovies].slice(0, MAX_MOVIES);
-    });
+            return [...prev, ...nextMovies].slice(0, MAX_MOVIES);
+        });
     }, [data, page]);
 
     if (isInitialLoading) return <div>Loading...</div>;
